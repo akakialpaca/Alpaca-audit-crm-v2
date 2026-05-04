@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { Audit, AuditStatus, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import Link from "next/link";
@@ -12,11 +12,11 @@ interface SpecialistStat {
 }
 
 export default async function AdminDashboard() {
-  const supabase = await createServerClient();
+  const svc = createServiceClient();
 
   const [{ data: audits }, { data: specialists }] = await Promise.all([
-    supabase.from("audits").select("*, profiles!assigned_specialist_id(id, full_name)").order("created_at", { ascending: false }),
-    supabase.from("profiles").select("*").eq("role", "specialist"),
+    svc.from("audits").select("*, profiles!assigned_specialist_id(id, full_name)").order("created_at", { ascending: false }),
+    svc.from("profiles").select("*").eq("role", "specialist"),
   ]);
 
   const all = (audits ?? []) as Audit[];

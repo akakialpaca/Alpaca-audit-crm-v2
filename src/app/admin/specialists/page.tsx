@@ -1,16 +1,16 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { AddSpecialistForm } from "./AddSpecialistForm";
 
 export default async function SpecialistsPage() {
-  const supabase = await createServerClient();
-  const { data: specialists } = await supabase
+  const svc = createServiceClient();
+  const { data: specialists } = await svc
     .from("profiles")
     .select("*")
     .eq("role", "specialist")
     .order("created_at", { ascending: false });
 
-  const { data: auditCounts } = await supabase
+  const { data: auditCounts } = await svc
     .from("audits")
     .select("assigned_specialist_id, status");
 

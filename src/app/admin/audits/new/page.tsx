@@ -1,9 +1,9 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { NewAuditForm } from "./NewAuditForm";
 
 export default async function NewAuditPage() {
-  const supabase = await createServerClient();
-  const { data: specialists } = await supabase
+  const svc = createServiceClient();
+  const { data: specialists } = await svc
     .from("profiles")
     .select("id, full_name, email")
     .eq("role", "specialist")

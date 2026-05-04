@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Audit, AuditStatus, Importance, STATUS_LABELS, formatDate, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -8,9 +8,9 @@ import Link from "next/link";
 
 export default async function AuditDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createServerClient();
+  const svc = createServiceClient();
 
-  const { data } = await supabase
+  const { data } = await svc
     .from("audits")
     .select("*, profiles!assigned_specialist_id(id, full_name, email)")
     .eq("id", id)

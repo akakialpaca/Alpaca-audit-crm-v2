@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { Audit, AuditStatus, Importance, STATUS_LABELS, IMPORTANCE_LABELS, formatDate, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
@@ -16,9 +16,9 @@ export default async function AuditsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const supabase = await createServerClient();
+  const svc = createServiceClient();
 
-  let query = supabase
+  let query = svc
     .from("audits")
     .select("*, profiles!assigned_specialist_id(id, full_name)")
     .order("deadline", { ascending: true });
@@ -29,7 +29,7 @@ export default async function AuditsPage({
 
   const [{ data: audits }, { data: specialists }] = await Promise.all([
     query,
-    supabase.from("profiles").select("id, full_name").eq("role", "specialist"),
+    svc.from("profiles").select("id, full_name").eq("role", "specialist"),
   ]);
 
   const all = (audits ?? []) as Audit[];
