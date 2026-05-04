@@ -11,8 +11,10 @@ export default async function Home() {
     .from("profiles")
     .select("role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (profile?.role === "admin") redirect("/admin");
+  const role = profile?.role ?? (user.user_metadata?.role as string);
+
+  if (role === "admin") redirect("/admin");
   redirect("/specialist");
 }

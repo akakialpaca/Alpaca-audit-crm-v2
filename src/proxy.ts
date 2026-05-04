@@ -41,9 +41,9 @@ export async function proxy(request: NextRequest) {
       .from("profiles")
       .select("role")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    const role = profile?.role;
+    const role = profile?.role ?? (user.user_metadata?.role as string);
     if (role === "specialist" && pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/specialist", request.url));
     }

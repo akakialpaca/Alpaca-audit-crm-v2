@@ -12,9 +12,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .from("profiles")
     .select("role, full_name, email")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (profile?.role !== "admin") redirect("/specialist");
+  const role = profile?.role ?? (user.user_metadata?.role as string);
+  if (role !== "admin") redirect("/specialist");
 
   return (
     <div className="flex min-h-screen bg-[#F8F8F8]">

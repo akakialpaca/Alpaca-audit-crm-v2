@@ -12,9 +12,10 @@ export default async function SpecialistLayout({ children }: { children: React.R
     .from("profiles")
     .select("role, full_name, email")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
-  if (profile?.role === "admin") redirect("/admin");
+  const role = profile?.role ?? (user.user_metadata?.role as string);
+  if (role === "admin") redirect("/admin");
 
   return (
     <div className="flex min-h-screen bg-[#F8F8F8]">
