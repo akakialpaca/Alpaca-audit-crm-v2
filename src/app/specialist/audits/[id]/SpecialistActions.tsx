@@ -17,7 +17,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
         <p className="text-green-700 font-semibold">✓ დავალება დასრულებულია</p>
         {audit.audit_result_url && (
           <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-[#D42B2B] hover:underline mt-2 block">
+            className="text-sm text-[#E8315B] hover:underline mt-2 block">
             აუდიტის ნახვა →
           </a>
         )}
@@ -31,7 +31,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
         <p className="text-yellow-700 font-semibold">⏳ შემოწმებაში — ადმინი განიხილავს</p>
         {audit.audit_result_url && (
           <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-[#D42B2B] hover:underline mt-2 block">
+            className="text-sm text-[#E8315B] hover:underline mt-2 block">
             წარდგენილი აუდიტი →
           </a>
         )}
@@ -79,7 +79,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
     setLoading(false);
   }
 
-  const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#D42B2B]/20 focus:border-[#D42B2B] transition-colors";
+  const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors";
 
   return (
     <div className="space-y-4">
@@ -98,7 +98,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
       {(audit.status === "In Progress" || audit.status === "In Correction") && (
         <form onSubmit={handleSubmitReview} className="bg-white rounded-xl border border-[#E5E5E5] p-6 space-y-4">
-          <h2 className="font-semibold text-[#1A1A1A]">
+          <h2 className="font-semibold text-[#1A1A2E]">
             {audit.status === "In Correction" ? "კორექციის შემდეგ გაგზავნა" : "შედეგის გაგზავნა შესამოწმებლად"}
           </h2>
 
@@ -132,7 +132,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#D42B2B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#B52323] transition-colors disabled:opacity-60"
+            className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
           >
             {loading ? "..." : "გაგზავნა შესამოწმებლად →"}
           </button>

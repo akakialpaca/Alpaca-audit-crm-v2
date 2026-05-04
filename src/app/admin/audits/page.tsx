@@ -38,12 +38,12 @@ export default async function AuditsPage({
     <div className="space-y-6 max-w-6xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">აუდიტები</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A2E]">აუდიტები</h1>
           <p className="text-gray-500 text-sm mt-1">{all.length} სულ</p>
         </div>
         <Link
           href="/admin/audits/new"
-          className="bg-[#D42B2B] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#B52323] transition-colors"
+          className="bg-[#E8315B] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors"
         >
           + ახალი აუდიტი
         </Link>
@@ -93,14 +93,14 @@ export default async function AuditsPage({
         {all.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-gray-400 text-sm">აუდიტები არ მოიძებნა</p>
-            <Link href="/admin/audits/new" className="mt-4 inline-block text-sm text-[#D42B2B] hover:underline">
+            <Link href="/admin/audits/new" className="mt-4 inline-block text-sm text-[#E8315B] hover:underline">
               + პირველი აუდიტის დამატება
             </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#F8F8F8] border-b border-[#E5E5E5]">
+              <thead className="bg-[#F5F6FA] border-b border-[#E5E5E5]">
                 <tr>
                   {["ვებსაიტი", "სპეციალისტი", "მნიშვნელობა", "ვადა", "სტატუსი", ""].map(h => (
                     <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>
@@ -111,9 +111,9 @@ export default async function AuditsPage({
                 {all.map((audit) => {
                   const overdue = isOverdue(audit.deadline, audit.status);
                   return (
-                    <tr key={audit.id} className="hover:bg-[#F8F8F8] transition-colors">
+                    <tr key={audit.id} className="hover:bg-[#F5F6FA] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-sm font-medium text-[#1A1A1A] max-w-56 truncate">{audit.source_url}</p>
+                        <p className="text-sm font-medium text-[#1A1A2E] max-w-56 truncate">{audit.source_url}</p>
                         <p className="text-xs text-gray-400">{audit.target_market}</p>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
@@ -134,7 +134,7 @@ export default async function AuditsPage({
                       <td className="px-4 py-3 text-right">
                         <Link
                           href={`/admin/audits/${audit.id}`}
-                          className="text-xs text-[#D42B2B] hover:underline font-medium"
+                          className="text-xs text-[#E8315B] hover:underline font-medium"
                         >
                           გახსნა →
                         </Link>
@@ -157,7 +157,7 @@ function FilterLink({ href, active, label }: { href: string; active: boolean; la
       href={href}
       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
         active
-          ? "bg-[#D42B2B] text-white"
+          ? "bg-[#E8315B] text-white"
           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
       }`}
     >

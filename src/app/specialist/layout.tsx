@@ -18,7 +18,7 @@ export default async function SpecialistLayout({ children }: { children: React.R
   if (role === "admin") redirect("/admin");
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8]">
+    <div className="flex min-h-screen bg-[#F5F6FA]">
       <SpecialistSidebar userName={profile?.full_name || profile?.email || ""} />
       <main className="flex-1 p-8 overflow-auto">{children}</main>
     </div>

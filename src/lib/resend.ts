@@ -9,11 +9,11 @@ function ADMIN_EMAIL() { return process.env.ADMIN_EMAIL ?? "akaki@alpaca.ge"; }
 function auditEmailHtml(title: string, body: string): string {
   return `
     <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;">
-      <div style="background:#D42B2B;padding:24px 32px;">
+      <div style="background:#E8315B;padding:24px 32px;">
         <h1 style="color:#fff;margin:0;font-size:20px;font-weight:700;">Alpaca SEO</h1>
       </div>
       <div style="padding:32px;">
-        <h2 style="margin:0 0 16px;font-size:18px;color:#1A1A1A;">${title}</h2>
+        <h2 style="margin:0 0 16px;font-size:18px;color:#1A1A2E;">${title}</h2>
         ${body}
       </div>
       <div style="padding:16px 32px;background:#f8f8f8;border-top:1px solid #e5e5e5;">
@@ -43,7 +43,7 @@ export async function sendNewAssignmentEmail(opts: {
          <tr><td style="padding:8px 0;color:#666;">ვადა:</td><td style="padding:8px 0;font-weight:600;">${opts.deadline}</td></tr>
          <tr><td style="padding:8px 0;color:#666;">მნიშვნელობა:</td><td style="padding:8px 0;font-weight:600;">${opts.importance}</td></tr>
        </table>
-       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/specialist" style="display:inline-block;background:#D42B2B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:8px;">დავალების ნახვა</a>`
+       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/specialist" style="display:inline-block;background:#E8315B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:8px;">დავალების ნახვა</a>`
     ),
   });
 }
@@ -61,7 +61,7 @@ export async function sendReviewRequestEmail(opts: {
       "აუდიტი შემოწმებას ელის",
       `<p style="color:#444;line-height:1.6;"><strong>${opts.specialistName}</strong>-მა დაასრულა და Review-ზე გამოაგზავნა:</p>
        <p style="color:#444;"><strong>${opts.sourceUrl}</strong></p>
-       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/audits/${opts.auditId}" style="display:inline-block;background:#D42B2B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:16px;">შემოწმება</a>`
+       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/audits/${opts.auditId}" style="display:inline-block;background:#E8315B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:16px;">შემოწმება</a>`
     ),
   });
 }
@@ -81,10 +81,10 @@ export async function sendCorrectionEmail(opts: {
       "კორექციაა საჭირო",
       `<p style="color:#444;line-height:1.6;">გამარჯობა, <strong>${opts.specialistName}</strong>!</p>
        <p style="color:#444;line-height:1.6;">ადმინი ითხოვს კორექციას <strong>${opts.sourceUrl}</strong>-სთვის:</p>
-       <div style="background:#fff3f3;border-left:4px solid #D42B2B;padding:16px;margin:16px 0;border-radius:4px;">
+       <div style="background:#fff3f3;border-left:4px solid #E8315B;padding:16px;margin:16px 0;border-radius:4px;">
          <p style="margin:0;color:#444;">${opts.comments}</p>
        </div>
-       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/specialist/audits/${opts.auditId}" style="display:inline-block;background:#D42B2B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:8px;">დავალების გახსნა</a>`
+       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/specialist/audits/${opts.auditId}" style="display:inline-block;background:#E8315B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:8px;">დავალების გახსნა</a>`
     ),
   });
 }

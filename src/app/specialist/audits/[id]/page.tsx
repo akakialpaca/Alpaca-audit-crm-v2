@@ -27,7 +27,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
     <div className="max-w-2xl space-y-6">
       <div>
         <Link href="/specialist" className="text-xs text-gray-400 hover:text-gray-600 mb-2 block">← დავალებები</Link>
-        <h1 className="text-xl font-bold text-[#1A1A1A] break-all">{audit.source_url}</h1>
+        <h1 className="text-xl font-bold text-[#1A1A2E] break-all">{audit.source_url}</h1>
         <div className="flex items-center gap-2 mt-2">
           <StatusBadge status={audit.status as AuditStatus} />
           <ImportanceBadge importance={audit.importance as Importance} />
@@ -41,7 +41,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
 
       {/* Details */}
       <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-        <h2 className="font-semibold text-[#1A1A1A] mb-4">დეტალები</h2>
+        <h2 className="font-semibold text-[#1A1A2E] mb-4">დეტალები</h2>
         <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
           {[
             { label: "საიტის ენა", value: audit.language },
@@ -51,7 +51,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
           ].map(({ label, value }) => (
             <div key={label}>
               <dt className="text-xs text-gray-500 mb-0.5">{label}</dt>
-              <dd className="text-sm font-medium text-[#1A1A1A]">{value}</dd>
+              <dd className="text-sm font-medium text-[#1A1A2E]">{value}</dd>
             </div>
           ))}
         </dl>

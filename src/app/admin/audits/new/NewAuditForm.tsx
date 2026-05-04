@@ -94,7 +94,7 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
               onClick={() => toggleKeywordLang(lang)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                 keywordLangs.includes(lang)
-                  ? "bg-[#D42B2B] text-white border-[#D42B2B]"
+                  ? "bg-[#E8315B] text-white border-[#E8315B]"
                   : "bg-white text-gray-600 border-[#E5E5E5] hover:border-gray-400"
               }`}
             >
@@ -144,7 +144,7 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#D42B2B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#B52323] transition-colors disabled:opacity-60"
+          className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
         >
           {loading ? "ემატება..." : "დამატება"}
         </button>
@@ -168,4 +168,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#D42B2B]/20 focus:border-[#D42B2B] transition-colors bg-white";
+const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors bg-white";

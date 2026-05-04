@@ -22,7 +22,7 @@ export default async function SpecialistDashboard() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">ჩემი დავალებები</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A2E]">ჩემი დავალებები</h1>
         <p className="text-gray-500 text-sm mt-1">{active.length} აქტიური · {inReview.length} შემოწმებაში</p>
       </div>
 
@@ -70,7 +70,7 @@ function AuditCard({ audit }: { audit: Audit }) {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-medium text-[#1A1A1A] truncate">{audit.source_url}</p>
+          <p className="font-medium text-[#1A1A2E] truncate">{audit.source_url}</p>
           <p className="text-xs text-gray-400 mt-0.5">{audit.target_market} · {audit.language}</p>
         </div>
         <div className="flex flex-col items-end gap-1.5 shrink-0">

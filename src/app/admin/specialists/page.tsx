@@ -22,7 +22,7 @@ export default async function SpecialistsPage() {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">სპეციალისტები</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A2E]">სპეციალისტები</h1>
         <p className="text-gray-500 text-sm mt-1">{specialists?.length ?? 0} სპეციალისტი</p>
       </div>
 
@@ -37,7 +37,7 @@ export default async function SpecialistsPage() {
             <div key={s.id} className="bg-white rounded-xl border border-[#E5E5E5] p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-[#1A1A1A]">{s.full_name}</p>
+                  <p className="font-semibold text-[#1A1A2E]">{s.full_name}</p>
                   <p className="text-sm text-gray-500 mt-0.5">{s.email}</p>
                   <p className="text-xs text-gray-400 mt-1">დამატებულია: {formatDate(s.created_at)}</p>
                 </div>

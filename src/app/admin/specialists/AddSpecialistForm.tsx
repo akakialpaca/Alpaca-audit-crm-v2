@@ -41,11 +41,11 @@ export function AddSpecialistForm() {
     router.refresh();
   }
 
-  const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#D42B2B]/20 focus:border-[#D42B2B] transition-colors";
+  const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors";
 
   return (
     <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-      <h2 className="font-semibold text-[#1A1A1A] mb-5">სპეციალისტის დამატება</h2>
+      <h2 className="font-semibold text-[#1A1A2E] mb-5">სპეციალისტის დამატება</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">სახელი გვარი *</label>
@@ -70,7 +70,7 @@ export function AddSpecialistForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#D42B2B] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#B52323] transition-colors disabled:opacity-60"
+          className="w-full bg-[#E8315B] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
         >
           {loading ? "ემატება..." : "დამატება"}
         </button>

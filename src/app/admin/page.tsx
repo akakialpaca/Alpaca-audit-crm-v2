@@ -40,14 +40,14 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8 max-w-6xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A2E]">Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">SEO Audit მართვის სისტემა</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: "სულ", value: total, color: "text-[#1A1A1A]" },
+          { label: "სულ", value: total, color: "text-[#1A1A2E]" },
           { label: "აქტიური", value: active, color: "text-blue-600" },
           { label: "შემოწმებაში", value: inReview, color: "text-yellow-600" },
           { label: "ვადაგადაცილებული", value: overdue, color: "text-red-600" },
@@ -64,11 +64,11 @@ export default async function AdminDashboard() {
       <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-medium text-gray-700">დასრულების მაჩვენებელი</p>
-          <span className="text-lg font-bold text-[#1A1A1A]">{completionRate}%</span>
+          <span className="text-lg font-bold text-[#1A1A2E]">{completionRate}%</span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-2">
           <div
-            className="bg-[#D42B2B] h-2 rounded-full transition-all"
+            className="bg-[#E8315B] h-2 rounded-full transition-all"
             style={{ width: `${completionRate}%` }}
           />
         </div>
@@ -77,14 +77,14 @@ export default async function AdminDashboard() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Specialist Performance */}
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-          <h2 className="font-semibold text-[#1A1A1A] mb-4">სპეციალისტების სტატისტიკა</h2>
+          <h2 className="font-semibold text-[#1A1A2E] mb-4">სპეციალისტების სტატისტიკა</h2>
           {specialistStats.length === 0 ? (
             <p className="text-sm text-gray-400">სპეციალისტები არ არის</p>
           ) : (
             <div className="space-y-3">
               {specialistStats.map(s => (
                 <div key={s.id} className="flex items-center justify-between py-2 border-b border-[#E5E5E5] last:border-0">
-                  <p className="text-sm font-medium text-[#1A1A1A]">{s.full_name}</p>
+                  <p className="text-sm font-medium text-[#1A1A2E]">{s.full_name}</p>
                   <div className="flex gap-4 text-xs text-gray-500">
                     <span className="text-blue-600 font-medium">{s.active} აქტიური</span>
                     {s.in_correction > 0 && <span className="text-orange-500 font-medium">{s.in_correction} კორ.</span>}
@@ -99,8 +99,8 @@ export default async function AdminDashboard() {
         {/* Recent Audits */}
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-[#1A1A1A]">ბოლო აუდიტები</h2>
-            <Link href="/admin/audits" className="text-xs text-[#D42B2B] hover:underline">ყველა →</Link>
+            <h2 className="font-semibold text-[#1A1A2E]">ბოლო აუდიტები</h2>
+            <Link href="/admin/audits" className="text-xs text-[#E8315B] hover:underline">ყველა →</Link>
           </div>
           {recentAudits.length === 0 ? (
             <p className="text-sm text-gray-400">აუდიტები არ არის</p>
@@ -113,7 +113,7 @@ export default async function AdminDashboard() {
                   className="flex items-center justify-between py-2 border-b border-[#E5E5E5] last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-[#1A1A1A] truncate max-w-48">{audit.source_url}</p>
+                    <p className="text-sm font-medium text-[#1A1A2E] truncate max-w-48">{audit.source_url}</p>
                     <p className="text-xs text-gray-400">{audit.deadline}</p>
                   </div>
                   <StatusBadge status={audit.status as AuditStatus} />

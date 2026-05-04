@@ -51,7 +51,7 @@ export function ReviewPanel({ audit }: { audit: Audit & { profiles: { id: string
 
   return (
     <div className="bg-white rounded-xl border border-[#E5E5E5] p-6 space-y-4">
-      <h2 className="font-semibold text-[#1A1A1A]">
+      <h2 className="font-semibold text-[#1A1A2E]">
         {audit.status === "Review" ? "შემოწმება" : "კორექციის შემდეგ შემოწმება"}
       </h2>
 
@@ -64,7 +64,7 @@ export function ReviewPanel({ audit }: { audit: Audit & { profiles: { id: string
           onChange={(e) => setComments(e.target.value)}
           rows={4}
           placeholder="კორექციის დეტალები სპეციალისტისთვის..."
-          className="w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#D42B2B]/20 focus:border-[#D42B2B] transition-colors resize-none"
+          className="w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors resize-none"
         />
       </div>
 

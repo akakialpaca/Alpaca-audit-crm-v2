@@ -26,7 +26,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
       <div className="flex items-start justify-between">
         <div>
           <Link href="/admin/audits" className="text-xs text-gray-400 hover:text-gray-600 mb-2 block">← აუდიტები</Link>
-          <h1 className="text-xl font-bold text-[#1A1A1A] break-all">{audit.source_url}</h1>
+          <h1 className="text-xl font-bold text-[#1A1A2E] break-all">{audit.source_url}</h1>
           <div className="flex items-center gap-2 mt-2">
             <StatusBadge status={audit.status as AuditStatus} />
             <ImportanceBadge importance={audit.importance as Importance} />
@@ -41,7 +41,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
 
       {/* Details */}
       <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-        <h2 className="font-semibold text-[#1A1A1A] mb-4">დეტალები</h2>
+        <h2 className="font-semibold text-[#1A1A2E] mb-4">დეტალები</h2>
         <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
           {[
             { label: "საიტის ენა", value: audit.language },
@@ -53,7 +53,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
           ].map(({ label, value }) => (
             <div key={label}>
               <dt className="text-xs text-gray-500 mb-0.5">{label}</dt>
-              <dd className="text-sm font-medium text-[#1A1A1A]">{value}</dd>
+              <dd className="text-sm font-medium text-[#1A1A2E]">{value}</dd>
             </div>
           ))}
         </dl>
@@ -62,14 +62,14 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
       {/* Specialist submission */}
       {(audit.audit_result_url || audit.status === "Review" || audit.status === "In Correction" || audit.status === "Completed") && (
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-          <h2 className="font-semibold text-[#1A1A1A] mb-4">სპეციალისტის წარდგინება</h2>
+          <h2 className="font-semibold text-[#1A1A2E] mb-4">სპეციალისტის წარდგინება</h2>
           <dl className="space-y-3">
             <div>
               <dt className="text-xs text-gray-500 mb-0.5">აუდიტის URL</dt>
               <dd>
                 {audit.audit_result_url ? (
                   <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
-                    className="text-sm text-[#D42B2B] hover:underline break-all font-medium">
+                    className="text-sm text-[#E8315B] hover:underline break-all font-medium">
                     {audit.audit_result_url}
                   </a>
                 ) : <span className="text-sm text-gray-400">—</span>}
