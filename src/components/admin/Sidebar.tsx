@@ -66,6 +66,13 @@ export function AdminSidebar({ userName }: { userName: string }) {
 
       {/* Bottom */}
       <div className="px-3 py-4 space-y-2 border-t border-[#EBEBF0]">
+        <Link
+          href="/admin/audits/new"
+          className="flex items-center justify-center gap-2 w-full bg-[#E8315B] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors"
+        >
+          <span className="text-lg leading-none">+</span>
+          ახალი აუდიტი
+        </Link>
         <div className="px-3 py-2">
           <p className="text-xs font-medium text-[#1A1A2E] truncate">{userName}</p>
           <p className="text-[10px] text-gray-400">ადმინი</p>

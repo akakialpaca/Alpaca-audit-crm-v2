@@ -24,6 +24,7 @@ export interface Audit {
   audit_result_url: string | null;
   audit_password: string | null;
   admin_comments: string | null;
+  notes: string | null;
   created_by: string | null;
   profiles?: Profile;
 }

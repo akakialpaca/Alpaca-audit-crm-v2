@@ -1,8 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Audit, AuditStatus, Importance, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, formatDate, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
 import { SpecialistActions } from "./SpecialistActions";
 import Link from "next/link";
 
@@ -30,7 +29,6 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
         <h1 className="text-xl font-bold text-[#1A1A2E] break-all">{audit.source_url}</h1>
         <div className="flex items-center gap-2 mt-2">
           <StatusBadge status={audit.status as AuditStatus} />
-          <ImportanceBadge importance={audit.importance as Importance} />
           {overdue && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
               ვადაგადაცილებული
@@ -40,11 +38,11 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
       </div>
 
       {/* Details */}
-      <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
+      <div className="bg-white rounded-xl border border-[#EBEBF0] p-6">
         <h2 className="font-semibold text-[#1A1A2E] mb-4">დეტალები</h2>
         <dl className="grid grid-cols-2 gap-x-8 gap-y-4">
           {[
-            { label: "საიტის ენა", value: audit.language },
+            { label: "აუდიტის ენა", value: audit.language },
             { label: "სამიზნე ბაზარი", value: audit.target_market },
             { label: "კ/სიტყვების ენა", value: audit.keyword_languages?.join(", ") || "—" },
             { label: "ვადა", value: formatDate(audit.deadline) },
@@ -57,10 +55,18 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
         </dl>
       </div>
 
-      {/* Admin comments for In Correction */}
+      {/* Admin notes */}
+      {audit.notes && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h2 className="font-semibold text-blue-800 mb-2">📋 ადმინის შენიშვნა</h2>
+          <p className="text-sm text-blue-700">{audit.notes}</p>
+        </div>
+      )}
+
+      {/* Admin correction comments */}
       {audit.status === "In Correction" && audit.admin_comments && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-          <h2 className="font-semibold text-orange-800 mb-2">⚠ ადმინის კომენტარი</h2>
+          <h2 className="font-semibold text-orange-800 mb-2">⚠ კორექციის კომენტარი</h2>
           <p className="text-sm text-orange-700">{audit.admin_comments}</p>
         </div>
       )}

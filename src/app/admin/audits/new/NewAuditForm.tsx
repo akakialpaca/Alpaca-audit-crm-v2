@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const LANGUAGES = ["ქართული", "English", "Русский", "Türkçe", "Deutsch", "Français", "სხვა"];
-const MARKETS = ["საქართველო", "რუსეთი", "თურქეთი", "გერმანია", "აშშ", "დიდი ბრიტანეთი", "სხვა"];
+const PRESET_MARKETS = ["საქართველო", "რუსეთი", "თურქეთი", "გერმანია", "აშშ", "დიდი ბრიტანეთი", "უკრაინა", "აზერბაიჯანი"];
+const PRESET_KW_LANGS = ["ქართული", "ინგლისური", "რუსული"];
 
 interface Specialist {
   id: string;
@@ -16,28 +16,51 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [keywordLangs, setKeywordLangs] = useState<string[]>([]);
 
-  function toggleKeywordLang(lang: string) {
-    setKeywordLangs(prev =>
-      prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
-    );
+  const [markets, setMarkets] = useState<string[]>([]);
+  const [customMarket, setCustomMarket] = useState("");
+
+  const [keywordLangs, setKeywordLangs] = useState<string[]>([]);
+  const [customKwLang, setCustomKwLang] = useState("");
+
+  function toggleMarket(m: string) {
+    setMarkets(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]);
+  }
+
+  function addCustomMarket() {
+    const val = customMarket.trim();
+    if (val && !markets.includes(val)) setMarkets(prev => [...prev, val]);
+    setCustomMarket("");
+  }
+
+  function toggleKwLang(l: string) {
+    setKeywordLangs(prev => prev.includes(l) ? prev.filter(x => x !== l) : [...prev, l]);
+  }
+
+  function addCustomKwLang() {
+    const val = customKwLang.trim();
+    if (val && !keywordLangs.includes(val)) setKeywordLangs(prev => [...prev, val]);
+    setCustomKwLang("");
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    if (markets.length === 0) { setError("სამიზნე ბაზარი სავალდებულოა"); return; }
+
+    setLoading(true);
     const form = e.currentTarget;
+
     const data = {
       source_url: (form.elements.namedItem("source_url") as HTMLInputElement).value,
       language: (form.elements.namedItem("language") as HTMLSelectElement).value,
       keyword_languages: keywordLangs,
-      target_market: (form.elements.namedItem("target_market") as HTMLSelectElement).value,
+      target_market: markets.join(", "),
       importance: (form.elements.namedItem("importance") as HTMLSelectElement).value,
       deadline: (form.elements.namedItem("deadline") as HTMLInputElement).value,
       assigned_specialist_id: (form.elements.namedItem("assigned_specialist_id") as HTMLSelectElement).value || null,
+      notes: (form.elements.namedItem("notes") as HTMLTextAreaElement).value || null,
     };
 
     const res = await fetch("/api/audits", {
@@ -58,75 +81,111 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#E5E5E5] p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#EBEBF0] p-6 space-y-5">
+
       <Field label="წყარო URL *">
-        <input
-          name="source_url"
-          type="url"
-          required
-          placeholder="https://example.com"
-          className={inputClass}
-        />
+        <input name="source_url" type="url" required placeholder="https://example.com" className={inp} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="საიტის ენა *">
-          <select name="language" required className={inputClass}>
-            <option value="">აირჩიეთ...</option>
-            {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-          </select>
-        </Field>
+      <Field label="აუდიტის ენა *">
+        <select name="language" required className={inp}>
+          <option value="">აირჩიეთ...</option>
+          <option value="ქართული">ქართული</option>
+          <option value="English">English</option>
+          <option value="Русский">Русский</option>
+          <option value="Türkçe">Türkçe</option>
+          <option value="Deutsch">Deutsch</option>
+          <option value="Français">Français</option>
+          <option value="სხვა">სხვა</option>
+        </select>
+      </Field>
 
-        <Field label="სამიზნე ბაზარი *">
-          <select name="target_market" required className={inputClass}>
-            <option value="">აირჩიეთ...</option>
-            {MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-        </Field>
-      </div>
-
-      <Field label="საკვანძო სიტყვების ენა">
-        <div className="flex flex-wrap gap-2 pt-1">
-          {LANGUAGES.map(lang => (
-            <button
-              key={lang}
-              type="button"
-              onClick={() => toggleKeywordLang(lang)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                keywordLangs.includes(lang)
-                  ? "bg-[#E8315B] text-white border-[#E8315B]"
-                  : "bg-white text-gray-600 border-[#E5E5E5] hover:border-gray-400"
-              }`}
-            >
-              {lang}
+      {/* სამიზნე ბაზარი — multi + custom */}
+      <Field label="სამიზნე ბაზარი *">
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {PRESET_MARKETS.map(m => (
+              <button key={m} type="button" onClick={() => toggleMarket(m)}
+                className={tag(markets.includes(m))}>
+                {m}
+              </button>
+            ))}
+            {markets.filter(m => !PRESET_MARKETS.includes(m)).map(m => (
+              <button key={m} type="button" onClick={() => toggleMarket(m)}
+                className={tag(true)}>
+                {m} ✕
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={customMarket}
+              onChange={e => setCustomMarket(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addCustomMarket())}
+              placeholder="სხვა ქვეყანა..."
+              className={`${inp} flex-1`}
+            />
+            <button type="button" onClick={addCustomMarket}
+              className="px-3 py-2 rounded-lg border border-[#EBEBF0] text-sm text-gray-600 hover:border-[#E8315B] hover:text-[#E8315B] transition-colors">
+              + დამატება
             </button>
-          ))}
+          </div>
+          {markets.length > 0 && (
+            <p className="text-xs text-gray-400">არჩეული: {markets.join(", ")}</p>
+          )}
+        </div>
+      </Field>
+
+      {/* საკვანძო სიტყვების ენა */}
+      <Field label="საკვანძო სიტყვების ენა">
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {PRESET_KW_LANGS.map(l => (
+              <button key={l} type="button" onClick={() => toggleKwLang(l)}
+                className={tag(keywordLangs.includes(l))}>
+                {l}
+              </button>
+            ))}
+            {keywordLangs.filter(l => !PRESET_KW_LANGS.includes(l)).map(l => (
+              <button key={l} type="button" onClick={() => toggleKwLang(l)}
+                className={tag(true)}>
+                {l} ✕
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={customKwLang}
+              onChange={e => setCustomKwLang(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addCustomKwLang())}
+              placeholder="სხვა ენა..."
+              className={`${inp} flex-1`}
+            />
+            <button type="button" onClick={addCustomKwLang}
+              className="px-3 py-2 rounded-lg border border-[#EBEBF0] text-sm text-gray-600 hover:border-[#E8315B] hover:text-[#E8315B] transition-colors">
+              + დამატება
+            </button>
+          </div>
         </div>
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
         <Field label="მნიშვნელობა *">
-          <select name="importance" required className={inputClass}>
+          <select name="importance" required className={inp}>
             <option value="">აირჩიეთ...</option>
             <option value="High">მაღალი</option>
             <option value="Medium">საშუალო</option>
             <option value="Low">დაბალი</option>
           </select>
         </Field>
-
         <Field label="ვადა *">
-          <input
-            name="deadline"
-            type="date"
-            required
-            min={new Date().toISOString().split("T")[0]}
-            className={inputClass}
-          />
+          <input name="deadline" type="date" required
+            min={new Date().toISOString().split("T")[0]} className={inp} />
         </Field>
       </div>
 
       <Field label="სპეციალისტი">
-        <select name="assigned_specialist_id" className={inputClass}>
+        <select name="assigned_specialist_id" className={inp}>
           <option value="">დანიშვნის გარეშე</option>
           {specialists.map(s => (
             <option key={s.id} value={s.id}>{s.full_name} ({s.email})</option>
@@ -134,24 +193,23 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
         </select>
       </Field>
 
+      <Field label="დამატებითი კომენტარი სპეციალისტისთვის">
+        <textarea name="notes" rows={3}
+          placeholder="დამატებითი ინსტრუქცია ან ინფორმაცია სპეციალისტისთვის..."
+          className={`${inp} resize-none`} />
+      </Field>
+
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading}
+          className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60">
           {loading ? "ემატება..." : "დამატება"}
         </button>
-        <a
-          href="/admin/audits"
-          className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-        >
+        <a href="/admin/audits"
+          className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
           გაუქმება
         </a>
       </div>
@@ -168,4 +226,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inputClass = "w-full px-3.5 py-2.5 rounded-lg border border-[#E5E5E5] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors bg-white";
+function tag(active: boolean) {
+  return `px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+    active
+      ? "bg-[#E8315B] text-white border-[#E8315B]"
+      : "bg-white text-gray-600 border-[#EBEBF0] hover:border-[#E8315B] hover:text-[#E8315B]"
+  }`;
+}
+
+const inp = "w-full px-3.5 py-2.5 rounded-lg border border-[#EBEBF0] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors bg-white";

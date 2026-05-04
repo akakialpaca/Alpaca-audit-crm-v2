@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import {
   sendReviewRequestEmail,
   sendCorrectionEmail,
@@ -15,7 +15,7 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await createServiceClient().from("profiles").select("role").eq("id", user.id).single();
   const role = profile?.role;
 
   const { data: audit } = await supabase.from("audits").select("*, profiles!assigned_specialist_id(id, full_name, email)").eq("id", id).single();
