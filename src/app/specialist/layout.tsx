@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient, createAdminClient } from "@/lib/supabase/server";
 import { SpecialistSidebar } from "@/components/specialist/Sidebar";
 
 export default async function SpecialistLayout({ children }: { children: React.ReactNode }) {
@@ -8,7 +8,8 @@ export default async function SpecialistLayout({ children }: { children: React.R
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const admin = await createAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("role, full_name, email")
     .eq("id", user.id)
