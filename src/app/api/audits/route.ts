@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
   // Send email if specialist assigned
   if (assigned_specialist_id && audit) {
-    const { data: specialist } = await supabase
+    const { data: specialist } = await createServiceClient()
       .from("profiles")
       .select("email, full_name")
       .eq("id", assigned_specialist_id)
