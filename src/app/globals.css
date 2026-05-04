@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-alpaca-red: #D42B2B;
+  --color-alpaca-red-dark: #B52323;
+  --color-alpaca-dark: #1A1A1A;
+  --color-alpaca-bg: #F8F8F8;
+  --color-alpaca-border: #E5E5E5;
+}
+
+body {
+  background-color: var(--color-alpaca-bg);
+  color: var(--color-alpaca-dark);
+  font-family: system-ui, -apple-system, sans-serif;
+}

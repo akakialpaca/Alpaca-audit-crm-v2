@@ -1,0 +1,128 @@
+import { createServerClient } from "@/lib/supabase/server";
+import { Audit, AuditStatus, isOverdue } from "@/lib/utils";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import Link from "next/link";
+
+interface SpecialistStat {
+  id: string;
+  full_name: string;
+  completed: number;
+  active: number;
+  in_correction: number;
+}
+
+export default async function AdminDashboard() {
+  const supabase = await createServerClient();
+
+  const [{ data: audits }, { data: specialists }] = await Promise.all([
+    supabase.from("audits").select("*, profiles!assigned_specialist_id(id, full_name)").order("created_at", { ascending: false }),
+    supabase.from("profiles").select("*").eq("role", "specialist"),
+  ]);
+
+  const all = (audits ?? []) as Audit[];
+  const total = all.length;
+  const active = all.filter(a => ["Pending", "In Progress"].includes(a.status)).length;
+  const inReview = all.filter(a => a.status === "Review").length;
+  const overdue = all.filter(a => isOverdue(a.deadline, a.status)).length;
+  const completed = all.filter(a => a.status === "Completed").length;
+  const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  const specialistStats: SpecialistStat[] = (specialists ?? []).map(s => ({
+    id: s.id,
+    full_name: s.full_name,
+    completed: all.filter(a => a.assigned_specialist_id === s.id && a.status === "Completed").length,
+    active: all.filter(a => a.assigned_specialist_id === s.id && ["Pending", "In Progress"].includes(a.status)).length,
+    in_correction: all.filter(a => a.assigned_specialist_id === s.id && a.status === "In Correction").length,
+  }));
+
+  const recentAudits = all.slice(0, 8);
+
+  return (
+    <div className="space-y-8 max-w-6xl">
+      <div>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">Dashboard</h1>
+        <p className="text-gray-500 text-sm mt-1">SEO Audit მართვის სისტემა</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {[
+          { label: "სულ", value: total, color: "text-[#1A1A1A]" },
+          { label: "აქტიური", value: active, color: "text-blue-600" },
+          { label: "შემოწმებაში", value: inReview, color: "text-yellow-600" },
+          { label: "ვადაგადაცილებული", value: overdue, color: "text-red-600" },
+          { label: "დასრულებული", value: completed, color: "text-green-600" },
+        ].map(stat => (
+          <div key={stat.label} className="bg-white rounded-xl border border-[#E5E5E5] p-5">
+            <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
+            <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Completion rate */}
+      <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-medium text-gray-700">დასრულების მაჩვენებელი</p>
+          <span className="text-lg font-bold text-[#1A1A1A]">{completionRate}%</span>
+        </div>
+        <div className="w-full bg-gray-100 rounded-full h-2">
+          <div
+            className="bg-[#D42B2B] h-2 rounded-full transition-all"
+            style={{ width: `${completionRate}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Specialist Performance */}
+        <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
+          <h2 className="font-semibold text-[#1A1A1A] mb-4">სპეციალისტების სტატისტიკა</h2>
+          {specialistStats.length === 0 ? (
+            <p className="text-sm text-gray-400">სპეციალისტები არ არის</p>
+          ) : (
+            <div className="space-y-3">
+              {specialistStats.map(s => (
+                <div key={s.id} className="flex items-center justify-between py-2 border-b border-[#E5E5E5] last:border-0">
+                  <p className="text-sm font-medium text-[#1A1A1A]">{s.full_name}</p>
+                  <div className="flex gap-4 text-xs text-gray-500">
+                    <span className="text-blue-600 font-medium">{s.active} აქტიური</span>
+                    {s.in_correction > 0 && <span className="text-orange-500 font-medium">{s.in_correction} კორ.</span>}
+                    <span className="text-green-600 font-medium">{s.completed} დასრულ.</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Audits */}
+        <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-[#1A1A1A]">ბოლო აუდიტები</h2>
+            <Link href="/admin/audits" className="text-xs text-[#D42B2B] hover:underline">ყველა →</Link>
+          </div>
+          {recentAudits.length === 0 ? (
+            <p className="text-sm text-gray-400">აუდიტები არ არის</p>
+          ) : (
+            <div className="space-y-3">
+              {recentAudits.map(audit => (
+                <Link
+                  key={audit.id}
+                  href={`/admin/audits/${audit.id}`}
+                  className="flex items-center justify-between py-2 border-b border-[#E5E5E5] last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#1A1A1A] truncate max-w-48">{audit.source_url}</p>
+                    <p className="text-xs text-gray-400">{audit.deadline}</p>
+                  </div>
+                  <StatusBadge status={audit.status as AuditStatus} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
