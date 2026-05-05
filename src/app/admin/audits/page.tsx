@@ -90,7 +90,7 @@ export default async function AuditsPage({
                       <td className="px-4 py-3">
                         <p className="text-sm text-gray-600">{(audit as any).profiles?.full_name ?? "—"}</p>
                         {unacknowledged && (
-                          <p className="text-xs text-[#E8315B] font-medium mt-0.5">🔔 მიღება მოლოდინში</p>
+                          <p className="text-xs text-[#E8315B] font-medium mt-0.5">🔔 დასადასტურებელი</p>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -101,7 +101,7 @@ export default async function AuditsPage({
                           {formatDate(audit.deadline)}
                         </p>
                         {overdue && <p className="text-xs text-red-500">ვადა გავიდა</p>}
-                        {dueToday && <p className="text-xs text-orange-500 font-medium">⚡ დღეს იწურება</p>}
+                        {dueToday && <p className="text-xs text-orange-500 font-medium">⚡ დღეს</p>}
                       </td>
                       <td className="px-4 py-3">
                         <StatusBadge status={audit.status as AuditStatus} />

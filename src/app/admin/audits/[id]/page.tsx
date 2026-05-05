@@ -54,7 +54,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
               label: "მიღების დადასტურება",
               value: audit.acknowledged_at
                 ? `✓ ${formatDateTime(audit.acknowledged_at)}`
-                : audit.assigned_specialist_id ? "⏳ მოლოდინში" : "—"
+                : audit.assigned_specialist_id ? "⏳ დასადასტურებელი" : "—"
             },
           ].map(({ label, value }) => (
             <div key={label}>
