@@ -15,13 +15,15 @@ export default async function CrmPage({ searchParams }: { searchParams: Promise<
   let query = svc
     .from("companies")
     .select("*, contacts(id, first_name, last_name, position, email)")
-    .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
   if (search) query = query.ilike("name", `%${search}%`);
 
   const { data } = await query;
-  const companies = (data ?? []) as (Company & { slug?: string })[];
+  // Filter deleted client-side so missing status column doesn't break the query
+  const companies = (data ?? []).filter(
+    (c: any) => c.status !== "deleted"
+  ) as (Company & { slug?: string })[];
 
   return (
     <div className="space-y-6 max-w-full">
