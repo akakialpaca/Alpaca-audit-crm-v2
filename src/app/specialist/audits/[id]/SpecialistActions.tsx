@@ -65,6 +65,23 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
     );
   }
 
+  async function handleAcknowledge() {
+    setLoading(true);
+    setError("");
+    const res = await fetch(`/api/audits/${audit.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ acknowledge: true }),
+    });
+    if (!res.ok) {
+      const { error } = await res.json();
+      setError(error ?? "შეცდომა");
+    } else {
+      router.refresh();
+    }
+    setLoading(false);
+  }
+
   async function handleStartProgress() {
     setLoading(true);
     setError("");
@@ -109,8 +126,23 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
   return (
     <div className="space-y-4">
-      {audit.status === "Pending" && (
+      {audit.status === "Pending" && !audit.acknowledged_at && (
+        <div className="bg-white rounded-xl border-2 border-[#E8315B] p-6">
+          <p className="text-sm font-semibold text-[#1A1A2E] mb-1">დავალება მიღებულია?</p>
+          <p className="text-xs text-gray-500 mb-4">გადახედე დეტალებს და დაადასტურე მიღება, რომ ადმინმა იცოდეს.</p>
+          <button
+            onClick={handleAcknowledge}
+            disabled={loading}
+            className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
+          >
+            {loading ? "..." : "✓ ვადასტურებ აუდიტის მიღებას"}
+          </button>
+        </div>
+      )}
+
+      {audit.status === "Pending" && audit.acknowledged_at && (
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
+          <p className="text-xs text-green-600 font-medium mb-3">✓ მიღება დადასტურებული</p>
           <p className="text-sm text-gray-600 mb-4">დაიწყე მუშაობა ამ დავალებაზე</p>
           <button
             onClick={handleStartProgress}

@@ -26,6 +26,7 @@ export interface Audit {
   admin_comments: string | null;
   notes: string | null;
   created_by: string | null;
+  acknowledged_at: string | null;
   profiles?: Profile;
 }
 
@@ -68,7 +69,21 @@ export function formatDate(dateStr: string): string {
 
 export function isOverdue(deadline: string, status: AuditStatus): boolean {
   if (status === "Completed") return false;
-  return new Date(deadline) < new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(deadline);
+  d.setHours(0, 0, 0, 0);
+  return d < today;
+}
+
+export function isDueToday(deadline: string): boolean {
+  const today = new Date();
+  const d = new Date(deadline);
+  return (
+    d.getFullYear() === today.getFullYear() &&
+    d.getMonth() === today.getMonth() &&
+    d.getDate() === today.getDate()
+  );
 }
 
 export function cn(...classes: (string | undefined | false | null)[]): string {

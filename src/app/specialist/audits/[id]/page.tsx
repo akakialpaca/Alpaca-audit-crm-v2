@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Audit, AuditStatus, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, formatDate, isOverdue, isDueToday } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { SpecialistActions } from "./SpecialistActions";
 import Link from "next/link";
@@ -21,6 +21,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
 
   const audit = data as Audit;
   const overdue = isOverdue(audit.deadline, audit.status);
+  const dueToday = !overdue && isDueToday(audit.deadline);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -32,6 +33,11 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
           {overdue && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
               ვადაგადაცილებული
+            </span>
+          )}
+          {dueToday && audit.status !== "Completed" && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+              ⚡ დღეს — 15:00-მდე
             </span>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
-import { Audit, AuditStatus, Importance, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, Importance, formatDate, isOverdue, isDueToday } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
 import { AuditFilters } from "@/components/admin/AuditFilters";
@@ -79,14 +79,19 @@ export default async function AuditsPage({
               <tbody className="divide-y divide-[#E5E5E5]">
                 {all.map((audit) => {
                   const overdue = isOverdue(audit.deadline, audit.status);
+                  const dueToday = !overdue && isDueToday(audit.deadline) && audit.status !== "Completed";
+                  const unacknowledged = audit.status === "Pending" && !audit.acknowledged_at && (audit as any).profiles;
                   return (
                     <tr key={audit.id} className="hover:bg-[#F5F6FA] transition-colors">
                       <td className="px-4 py-3">
                         <p className="text-sm font-medium text-[#1A1A2E] max-w-56 truncate">{audit.source_url}</p>
                         <p className="text-xs text-gray-400">{audit.target_market}</p>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {(audit as any).profiles?.full_name ?? "—"}
+                      <td className="px-4 py-3">
+                        <p className="text-sm text-gray-600">{(audit as any).profiles?.full_name ?? "—"}</p>
+                        {unacknowledged && (
+                          <p className="text-xs text-[#E8315B] font-medium mt-0.5">🔔 მიღება მოლოდინში</p>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <ImportanceBadge importance={audit.importance as Importance} />
@@ -96,6 +101,7 @@ export default async function AuditsPage({
                           {formatDate(audit.deadline)}
                         </p>
                         {overdue && <p className="text-xs text-red-500">ვადა გავიდა</p>}
+                        {dueToday && <p className="text-xs text-orange-500 font-medium">⚡ დღეს იწურება</p>}
                       </td>
                       <td className="px-4 py-3">
                         <StatusBadge status={audit.status as AuditStatus} />

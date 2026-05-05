@@ -26,6 +26,22 @@ export async function PATCH(
   }
 
   const body = await req.json();
+
+  // Acknowledgment action (separate from status transition)
+  if (body.acknowledge === true) {
+    if (role !== "specialist" || audit.assigned_specialist_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (audit.acknowledged_at) {
+      return NextResponse.json({ success: true }); // already acknowledged
+    }
+    const { error } = await supabase.from("audits")
+      .update({ acknowledged_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
   const { status, audit_result_url, audit_password, admin_comments } = body;
 
   // Validate transitions

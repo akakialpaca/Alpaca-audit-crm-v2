@@ -1,5 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
-import { Audit, AuditStatus, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, formatDate, isOverdue, isDueToday } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import Link from "next/link";
 
@@ -62,10 +62,14 @@ export default async function SpecialistDashboard() {
 
 function AuditCard({ audit }: { audit: Audit }) {
   const overdue = isOverdue(audit.deadline, audit.status);
+  const dueToday = !overdue && isDueToday(audit.deadline) && audit.status !== "Completed";
+  const unacknowledged = audit.status === "Pending" && !audit.acknowledged_at;
   return (
     <Link
       href={`/specialist/audits/${audit.id}`}
-      className="block bg-white rounded-xl border border-[#E5E5E5] p-5 hover:shadow-sm transition-shadow"
+      className={`block bg-white rounded-xl border p-5 hover:shadow-sm transition-shadow ${
+        unacknowledged ? "border-[#E8315B]" : "border-[#E5E5E5]"
+      }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -74,6 +78,12 @@ function AuditCard({ audit }: { audit: Audit }) {
         </div>
         <div className="flex flex-col items-end gap-1.5 shrink-0">
           <StatusBadge status={audit.status as AuditStatus} />
+          {unacknowledged && (
+            <span className="text-xs font-semibold text-[#E8315B]">მიღება საჭიროა</span>
+          )}
+          {dueToday && (
+            <span className="text-xs font-bold text-orange-600">⚡ დღეს — 15:00-მდე</span>
+          )}
         </div>
       </div>
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#E5E5E5]">
