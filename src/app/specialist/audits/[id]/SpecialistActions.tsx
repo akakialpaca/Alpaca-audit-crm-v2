@@ -128,12 +128,10 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
     <div className="space-y-4">
       {audit.status === "Pending" && !audit.acknowledged_at && (
         <div className="bg-white rounded-xl border-2 border-[#E8315B] p-6">
-          <p className="text-sm font-semibold text-[#1A1A2E] mb-1">დავალება მიღებულია?</p>
-          <p className="text-xs text-gray-500 mb-4">გადახედე დეტალებს და დაადასტურე მიღება, რომ ადმინმა იცოდეს.</p>
           <button
             onClick={handleAcknowledge}
             disabled={loading}
-            className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
+            className="w-full bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60"
           >
             {loading ? "..." : "✓ ვადასტურებ აუდიტის მიღებას"}
           </button>
