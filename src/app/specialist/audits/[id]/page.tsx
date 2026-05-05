@@ -37,6 +37,17 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
         </div>
       </div>
 
+      {/* Deadline notice */}
+      {audit.status !== "Completed" && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-300 rounded-xl px-5 py-3.5">
+          <span className="text-amber-500 text-lg leading-none shrink-0">⏰</span>
+          <div>
+            <p className="text-sm font-bold text-amber-800">ჩაბარება — არაუგვიანეს 15:00</p>
+            <p className="text-xs text-amber-700 mt-0.5">სამუშაო დღე 18:00-ზე მთავრდება. საჭიროა დრო გადახედვისა და კორექციისთვის.</p>
+          </div>
+        </div>
+      )}
+
       {/* Details */}
       <div className="bg-white rounded-xl border border-[#EBEBF0] p-6">
         <h2 className="font-semibold text-[#1A1A2E] mb-4">დეტალები</h2>
