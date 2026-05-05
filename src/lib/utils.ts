@@ -106,3 +106,62 @@ export function isDueToday(deadline: string): boolean {
 export function cn(...classes: (string | undefined | false | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
+
+// ─── CRM Types ───────────────────────────────────────────
+
+export type PipelineStage = "Lead" | "Meeting" | "Proposal" | "Negotiation" | "Won" | "Lost";
+export type ActivityType = "call" | "email" | "meeting" | "note";
+
+export const PIPELINE_STAGES: { value: PipelineStage; label: string; color: string }[] = [
+  { value: "Lead",        label: "ლიდი",           color: "bg-gray-100 text-gray-700" },
+  { value: "Meeting",     label: "შეხვედრა",        color: "bg-blue-100 text-blue-700" },
+  { value: "Proposal",    label: "წინადადება",      color: "bg-purple-100 text-purple-700" },
+  { value: "Negotiation", label: "მოლაპარაკება",    color: "bg-yellow-100 text-yellow-700" },
+  { value: "Won",         label: "მოგებული",        color: "bg-green-100 text-green-700" },
+  { value: "Lost",        label: "დაკარგული",       color: "bg-red-100 text-red-700" },
+];
+
+export const ACTIVITY_LABELS: Record<ActivityType, string> = {
+  call:    "📞 ზარი",
+  email:   "✉️ მეილი",
+  meeting: "🤝 შეხვედრა",
+  note:    "📝 შენიშვნა",
+};
+
+export interface Company {
+  id: string;
+  created_at: string;
+  name: string;
+  website: string | null;
+  industry: string | null;
+  pipeline_stage: PipelineStage;
+  notes: string | null;
+  created_by: string | null;
+  contacts?: Contact[];
+}
+
+export interface Contact {
+  id: string;
+  created_at: string;
+  company_id: string | null;
+  first_name: string;
+  last_name: string | null;
+  position: string | null;
+  email: string | null;
+  phone: string | null;
+  whatsapp_number: string | null;
+  linkedin_url: string | null;
+  notes: string | null;
+  created_by: string | null;
+  company?: Company;
+}
+
+export interface ContactActivity {
+  id: string;
+  created_at: string;
+  contact_id: string;
+  type: ActivityType;
+  content: string;
+  created_by: string | null;
+  profiles?: { full_name: string };
+}

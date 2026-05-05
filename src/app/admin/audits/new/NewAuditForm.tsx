@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ContactSearch } from "@/components/admin/ContactSearch";
 
 const PRESET_MARKETS = ["საქართველო", "აშშ"];
 const PRESET_LANGS = ["ქართული", "ინგლისური", "რუსული"];
@@ -17,6 +18,7 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [contactId, setContactId] = useState<string | null>(null);
 
   const [markets, setMarkets] = useState<string[]>([]);
   const [customMarket, setCustomMarket] = useState("");
@@ -67,6 +69,7 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
       deadline: (form.elements.namedItem("deadline") as HTMLInputElement).value,
       assigned_specialist_id: (form.elements.namedItem("assigned_specialist_id") as HTMLSelectElement).value || null,
       notes: (form.elements.namedItem("notes") as HTMLTextAreaElement).value || null,
+      contact_id: contactId,
     };
 
     const res = await fetch("/api/audits", {
@@ -219,6 +222,15 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
           placeholder="დამატებითი ინსტრუქცია ან ინფორმაცია სპეციალისტისთვის..."
           className={`${inp} resize-none`} />
       </Field>
+
+      <div className="border-t border-[#EBEBF0] pt-5">
+        <Field label="კლიენტი (CRM კონტაქტი)">
+          <ContactSearch value={contactId} onChange={setContactId} />
+          <p className="text-xs text-gray-400 mt-1.5">
+            ჩაწერე კონტაქტის სახელი ან მეილი. <a href="/admin/crm/new" target="_blank" className="text-[#E8315B] hover:underline">+ ახალი კონტაქტი</a>
+          </p>
+        </Field>
+      </div>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>

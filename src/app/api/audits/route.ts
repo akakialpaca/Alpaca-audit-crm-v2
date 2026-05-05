@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
-  const { source_url, language, keyword_languages, target_market, importance, deadline, assigned_specialist_id, notes } = body;
+  const { source_url, language, keyword_languages, target_market, importance, deadline, assigned_specialist_id, notes, contact_id } = body;
 
   if (!source_url || !language || !target_market || !importance || !deadline) {
     return NextResponse.json({ error: "შევსება სავალდებულოა" }, { status: 400 });
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
     deadline,
     assigned_specialist_id: assigned_specialist_id || null,
     notes: notes || null,
+    contact_id: contact_id || null,
     created_by: user.id,
     status: "Pending",
   }).select().single();
