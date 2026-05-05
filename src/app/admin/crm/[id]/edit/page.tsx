@@ -7,10 +7,11 @@ export default async function EditCompanyPage({ params }: { params: Promise<{ id
   const { id: slugOrId } = await params;
   const svc = createServiceClient();
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
   const { data } = await svc
     .from("companies")
     .select("*")
-    .or(`slug.eq.${slugOrId},id.eq.${slugOrId}`)
+    .eq(isUuid ? "id" : "slug", slugOrId)
     .maybeSingle();
 
   if (!data) notFound();

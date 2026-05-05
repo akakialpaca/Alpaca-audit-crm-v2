@@ -11,11 +11,11 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
   const { id: slugOrId } = await params;
   const svc = createServiceClient();
 
-  // Support both slug and UUID (backward compat)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
   const { data: companyData } = await svc
     .from("companies")
     .select("*")
-    .or(`slug.eq.${slugOrId},id.eq.${slugOrId}`)
+    .eq(isUuid ? "id" : "slug", slugOrId)
     .maybeSingle();
 
   if (!companyData) notFound();

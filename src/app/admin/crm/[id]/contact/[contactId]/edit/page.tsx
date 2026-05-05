@@ -8,7 +8,7 @@ export default async function EditContactPage({ params }: { params: Promise<{ id
   const svc = createServiceClient();
 
   const [companyRes, contactRes] = await Promise.all([
-    svc.from("companies").select("id, slug, name").or(`slug.eq.${slugOrId},id.eq.${slugOrId}`).maybeSingle(),
+    svc.from("companies").select("id, slug, name").eq(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId) ? "id" : "slug", slugOrId).maybeSingle(),
     svc.from("contacts").select("*").eq("id", contactId).single(),
   ]);
 
