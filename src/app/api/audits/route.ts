@@ -56,6 +56,7 @@ export async function POST(req: Request) {
           specialistName: specialist.full_name,
           sourceUrl: source_url,
           deadline,
+          auditId: audit.id,
         }).catch(console.error);
       }
     }

@@ -24,15 +24,16 @@ export async function sendWhatsAppNewAudit(opts: {
   specialistName: string;
   sourceUrl: string;
   deadline: string;
+  auditId: string;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   await sendWA(
     opts.toNumber,
-    `🆕 გამარჯობა, ${opts.specialistName}!\n` +
-    `ახალი SEO აუდიტი დაგენიჭა:\n` +
-    `🌐 ${opts.sourceUrl}\n` +
-    `📅 ვადა: ${opts.deadline}\n` +
-    `🔗 ${siteUrl}/specialist`
+    `🚨 *${opts.specialistName}* შენ დაგემატა ახალი აუდიტი\n` +
+    `${opts.sourceUrl}\n` +
+    `${opts.deadline}\n` +
+    `${siteUrl}/specialist/audits/${opts.auditId}\n` +
+    `გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული`
   );
 }
 
