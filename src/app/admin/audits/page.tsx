@@ -1,13 +1,16 @@
 import { createServiceClient } from "@/lib/supabase/server";
-import { Audit, AuditStatus, Importance, STATUS_LABELS, IMPORTANCE_LABELS, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, Importance, formatDate, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
+import { AuditFilters } from "@/components/admin/AuditFilters";
 import Link from "next/link";
+import { Suspense } from "react";
 
 interface SearchParams {
   status?: string;
   specialist?: string;
   importance?: string;
+  search?: string;
 }
 
 export default async function AuditsPage({
@@ -26,6 +29,7 @@ export default async function AuditsPage({
   if (params.status) query = query.eq("status", params.status);
   if (params.specialist) query = query.eq("assigned_specialist_id", params.specialist);
   if (params.importance) query = query.eq("importance", params.importance);
+  if (params.search) query = query.ilike("source_url", `%${params.search}%`);
 
   const [{ data: audits }, { data: specialists }] = await Promise.all([
     query,
@@ -49,44 +53,9 @@ export default async function AuditsPage({
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl border border-[#E5E5E5] p-4 flex flex-wrap gap-3">
-        <FilterLink href="/admin/audits" active={!params.status && !params.specialist && !params.importance} label="ყველა" />
-
-        {Object.entries(STATUS_LABELS).map(([value, label]) => (
-          <FilterLink
-            key={value}
-            href={`/admin/audits?status=${value}${params.specialist ? `&specialist=${params.specialist}` : ""}${params.importance ? `&importance=${params.importance}` : ""}`}
-            active={params.status === value}
-            label={label}
-          />
-        ))}
-
-        <div className="w-px bg-[#E5E5E5]" />
-
-        {Object.entries(IMPORTANCE_LABELS).map(([value, label]) => (
-          <FilterLink
-            key={value}
-            href={`/admin/audits?importance=${value}${params.status ? `&status=${params.status}` : ""}${params.specialist ? `&specialist=${params.specialist}` : ""}`}
-            active={params.importance === value}
-            label={label}
-          />
-        ))}
-
-        {specialists && specialists.length > 0 && (
-          <>
-            <div className="w-px bg-[#E5E5E5]" />
-            {specialists.map(s => (
-              <FilterLink
-                key={s.id}
-                href={`/admin/audits?specialist=${s.id}${params.status ? `&status=${params.status}` : ""}${params.importance ? `&importance=${params.importance}` : ""}`}
-                active={params.specialist === s.id}
-                label={s.full_name}
-              />
-            ))}
-          </>
-        )}
-      </div>
+      <Suspense>
+        <AuditFilters specialists={specialists ?? []} />
+      </Suspense>
 
       {/* Table */}
       <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden">
@@ -148,20 +117,5 @@ export default async function AuditsPage({
         )}
       </div>
     </div>
-  );
-}
-
-function FilterLink({ href, active, label }: { href: string; active: boolean; label: string }) {
-  return (
-    <Link
-      href={href}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-        active
-          ? "bg-[#E8315B] text-white"
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }

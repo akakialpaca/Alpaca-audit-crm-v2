@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const PRESET_MARKETS = ["საქართველო", "რუსეთი", "თურქეთი", "გერმანია", "აშშ", "დიდი ბრიტანეთი", "უკრაინა", "აზერბაიჯანი"];
+const PRESET_MARKETS = ["საქართველო", "აშშ"];
+const PRESET_LANGS = ["ქართული", "ინგლისური", "რუსული"];
 const PRESET_KW_LANGS = ["ქართული", "ინგლისური", "რუსული"];
 
 interface Specialist {
@@ -19,6 +20,10 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
 
   const [markets, setMarkets] = useState<string[]>([]);
   const [customMarket, setCustomMarket] = useState("");
+
+  const [language, setLanguage] = useState("");
+  const [customLang, setCustomLang] = useState("");
+  const [showCustomLang, setShowCustomLang] = useState(false);
 
   const [keywordLangs, setKeywordLangs] = useState<string[]>([]);
   const [customKwLang, setCustomKwLang] = useState("");
@@ -48,13 +53,14 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
     setError("");
 
     if (markets.length === 0) { setError("სამიზნე ბაზარი სავალდებულოა"); return; }
+    if (!language) { setError("აუდიტის ენა სავალდებულოა"); return; }
 
     setLoading(true);
     const form = e.currentTarget;
 
     const data = {
       source_url: (form.elements.namedItem("source_url") as HTMLInputElement).value,
-      language: (form.elements.namedItem("language") as HTMLSelectElement).value,
+      language,
       keyword_languages: keywordLangs,
       target_market: markets.join(", "),
       importance: (form.elements.namedItem("importance") as HTMLSelectElement).value,
@@ -88,16 +94,31 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
       </Field>
 
       <Field label="აუდიტის ენა *">
-        <select name="language" required className={inp}>
-          <option value="">აირჩიეთ...</option>
-          <option value="ქართული">ქართული</option>
-          <option value="English">English</option>
-          <option value="Русский">Русский</option>
-          <option value="Türkçe">Türkçe</option>
-          <option value="Deutsch">Deutsch</option>
-          <option value="Français">Français</option>
-          <option value="სხვა">სხვა</option>
-        </select>
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {PRESET_LANGS.map(l => (
+              <button key={l} type="button"
+                onClick={() => { setLanguage(l); setShowCustomLang(false); setCustomLang(""); }}
+                className={tag(language === l && !showCustomLang)}>
+                {l}
+              </button>
+            ))}
+            <button type="button"
+              onClick={() => { setShowCustomLang(true); setLanguage(""); }}
+              className={tag(showCustomLang)}>
+              + სხვა
+            </button>
+          </div>
+          {showCustomLang && (
+            <input
+              value={customLang}
+              onChange={e => { setCustomLang(e.target.value); setLanguage(e.target.value); }}
+              placeholder="ჩაწერეთ ენა..."
+              className={inp}
+              autoFocus
+            />
+          )}
+        </div>
       </Field>
 
       {/* სამიზნე ბაზარი — multi + custom */}
