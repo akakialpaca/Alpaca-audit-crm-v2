@@ -25,17 +25,15 @@ export function AdminSidebar({ userName }: { userName: string }) {
   return (
     <aside className="w-56 min-h-screen bg-white border-r border-[#EBEBF0] flex flex-col shrink-0">
       {/* Logo */}
-      <div className="px-5 py-6 border-b border-[#EBEBF0]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-[#E8315B] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">A</span>
-          </div>
-          <div>
-            <p className="text-sm font-bold text-[#1A1A2E]">Alpaca</p>
-            <p className="text-[10px] text-gray-400 leading-none">SEO Audit</p>
-          </div>
+      <Link href="/admin" className="px-5 py-6 border-b border-[#EBEBF0] flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+        <div className="w-8 h-8 bg-[#E8315B] rounded-lg flex items-center justify-center shrink-0">
+          <span className="text-white font-bold text-sm">A</span>
         </div>
-      </div>
+        <div>
+          <p className="text-sm font-bold text-[#1A1A2E]">Alpaca</p>
+          <p className="text-[10px] text-gray-400 leading-none">SEO Audit</p>
+        </div>
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">

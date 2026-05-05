@@ -61,7 +61,7 @@ export default async function AdminDashboard({
     in_correction: all.filter(a => a.assigned_specialist_id === s.id && a.status === "In Correction").length,
   }));
 
-  const recentAudits = all.slice(0, 8);
+  const recentAudits = all.slice(0, 5);
   const currentPeriod = period ?? "";
 
   return (
