@@ -29,9 +29,9 @@ export async function sendWhatsAppNewAudit(opts: {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   await sendWA(
     opts.toNumber,
-    `🚨 *${opts.specialistName}* შენ დაგემატა ახალი აუდიტი\n\n` +
-    `${opts.sourceUrl}\n\n` +
-    `${opts.deadline}\n\n` +
+    `🚨 შენ დაგემატა ახალი აუდიტი\n\n` +
+    `🌐 ${opts.sourceUrl}\n\n` +
+    `*დედლაინი:* ${opts.deadline}\n\n` +
     `${siteUrl}/specialist/audits/${opts.auditId}\n\n` +
     `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`
   );
@@ -47,9 +47,9 @@ export async function sendWhatsAppCorrection(opts: {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   await sendWA(
     opts.toNumber,
-    `⚠️ ${opts.specialistName}, კორექცია საჭიროა!\n` +
-    `🌐 ${opts.sourceUrl}\n` +
-    `💬 ${opts.comments}\n` +
+    `⚠️ კორექცია საჭიროა!\n\n` +
+    `🌐 ${opts.sourceUrl}\n\n` +
+    `💬 ${opts.comments}\n\n` +
     `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`
   );
 }
