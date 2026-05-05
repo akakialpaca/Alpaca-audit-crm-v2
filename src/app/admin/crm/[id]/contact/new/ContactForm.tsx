@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 const inp = "w-full px-3.5 py-2.5 rounded-lg border border-[#EBEBF0] text-sm focus:outline-none focus:ring-2 focus:ring-[#E8315B]/20 focus:border-[#E8315B] transition-colors bg-white";
 
 interface Props {
-  companyId: string;
+  companyId: string;   // UUID for API calls
+  companySlug: string; // slug for URL navigation
   initial?: {
     id?: string;
     first_name?: string;
@@ -20,7 +21,7 @@ interface Props {
   };
 }
 
-export function ContactForm({ companyId, initial }: Props) {
+export function ContactForm({ companyId, companySlug, initial }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -67,7 +68,7 @@ export function ContactForm({ companyId, initial }: Props) {
       return;
     }
 
-    router.push(`/admin/crm/${companyId}`);
+    router.push(`/admin/crm/${companySlug}`);
     router.refresh();
   }
 
@@ -109,7 +110,7 @@ export function ContactForm({ companyId, initial }: Props) {
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">შენიშვნები</label>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={`${inp} resize-none`} placeholder="კონტაქტის შესახებ..." />
+        <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={`${inp} resize-none`} />
       </div>
       {error && <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>}
       <div className="flex gap-3">
@@ -117,7 +118,7 @@ export function ContactForm({ companyId, initial }: Props) {
           className="bg-[#E8315B] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors disabled:opacity-60">
           {loading ? "..." : initial?.id ? "შენახვა" : "დამატება"}
         </button>
-        <a href={`/admin/crm/${companyId}`} className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+        <a href={`/admin/crm/${companySlug}`} className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
           გაუქმება
         </a>
       </div>

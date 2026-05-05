@@ -18,6 +18,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (body.industry !== undefined) updates.industry = body.industry || null;
   if (body.pipeline_stage !== undefined) updates.pipeline_stage = body.pipeline_stage;
   if (body.notes !== undefined) updates.notes = body.notes || null;
+  if (body.slug !== undefined) updates.slug = body.slug || null;
 
   const { error } = await svc.from("companies").update(updates).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

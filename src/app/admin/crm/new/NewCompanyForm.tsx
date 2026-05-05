@@ -15,6 +15,7 @@ export function NewCompanyForm() {
 
   // Company fields
   const [companyName, setCompanyName] = useState("");
+  const [slug, setSlug] = useState("");
   const [website, setWebsite] = useState("");
   const [industry, setIndustry] = useState("");
   const [customIndustry, setCustomIndustry] = useState("");
@@ -44,6 +45,7 @@ export function NewCompanyForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: companyName.trim(),
+        slug: slug.trim() || null,
         website: website.trim() || null,
         industry: effectiveIndustry || null,
         pipeline_stage: stage,
@@ -97,11 +99,19 @@ export function NewCompanyForm() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">სახელი *</label>
-            <input value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Alpaca LLC" className={inp} required />
+            <input value={companyName}
+              onChange={e => {
+                setCompanyName(e.target.value);
+                if (!slug) setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-"));
+              }}
+              placeholder="Alpaca LLC" className={inp} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">ვებსაიტი</label>
-            <input value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://example.com" className={inp} />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">URL სახელი (slug)</label>
+            <input value={slug}
+              onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+              placeholder="alpaca-llc" className={inp} />
+            <p className="text-xs text-gray-400 mt-1">/admin/crm/{slug || "..."}</p>
           </div>
         </div>
 

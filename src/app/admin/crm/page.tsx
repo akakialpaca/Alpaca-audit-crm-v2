@@ -1,15 +1,26 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { Company, PIPELINE_STAGES } from "@/lib/utils";
+import { CrmSearch } from "@/components/admin/CrmSearch";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function CrmPage() {
+function companyHref(c: Company) {
+  return `/admin/crm/${(c as any).slug ?? c.id}`;
+}
+
+export default async function CrmPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+  const { search } = await searchParams;
   const svc = createServiceClient();
-  const { data } = await svc
+
+  let query = svc
     .from("companies")
     .select("*, contacts(id, first_name, last_name, position, email)")
     .order("created_at", { ascending: false });
 
-  const companies = (data ?? []) as Company[];
+  if (search) query = query.ilike("name", `%${search}%`);
+
+  const { data } = await query;
+  const companies = (data ?? []) as (Company & { slug?: string })[];
 
   return (
     <div className="space-y-6 max-w-full">
@@ -18,10 +29,8 @@ export default async function CrmPage() {
           <h1 className="text-2xl font-bold text-[#1A1A2E]">CRM</h1>
           <p className="text-gray-500 text-sm mt-1">{companies.length} კომპანია</p>
         </div>
-        <Link
-          href="/admin/crm/new"
-          className="bg-[#E8315B] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors"
-        >
+        <Link href="/admin/crm/new"
+          className="bg-[#E8315B] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#C9284F] transition-colors">
           + ახალი კომპანია
         </Link>
       </div>
@@ -48,20 +57,16 @@ export default async function CrmPage() {
                   {stageCompanies.map(company => {
                     const contact = company.contacts?.[0];
                     return (
-                      <Link key={company.id} href={`/admin/crm/${company.id}`}>
+                      <Link key={company.id} href={companyHref(company)}>
                         <div className="bg-white border border-[#E5E5E5] rounded-xl p-4 hover:border-[#E8315B] hover:shadow-sm transition-all cursor-pointer">
                           <p className="font-semibold text-[#1A1A2E] text-sm truncate">{company.name}</p>
-                          {company.industry && (
-                            <p className="text-xs text-gray-400 mt-0.5">{company.industry}</p>
-                          )}
+                          {company.industry && <p className="text-xs text-gray-400 mt-0.5">{company.industry}</p>}
                           {contact && (
                             <p className="text-xs text-gray-500 mt-2 truncate">
                               👤 {contact.first_name} {contact.last_name ?? ""}
                             </p>
                           )}
-                          {company.website && (
-                            <p className="text-xs text-[#E8315B] mt-1 truncate">{company.website}</p>
-                          )}
+                          {company.website && <p className="text-xs text-[#E8315B] mt-1 truncate">{company.website}</p>}
                         </div>
                       </Link>
                     );
@@ -74,11 +79,24 @@ export default async function CrmPage() {
       </div>
 
       {/* All companies table */}
-      {companies.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden">
-          <div className="px-5 py-4 border-b border-[#E5E5E5]">
-            <h2 className="font-semibold text-[#1A1A2E] text-sm">ყველა კომპანია</h2>
+      <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
+          <h2 className="font-semibold text-[#1A1A2E] text-sm">ყველა კომპანია</h2>
+          <Suspense>
+            <CrmSearch />
+          </Suspense>
+        </div>
+
+        {companies.length === 0 ? (
+          <div className="p-12 text-center">
+            <p className="text-gray-400 text-sm">{search ? "კომპანია ვერ მოიძებნა" : "კომპანიები არ არის"}</p>
+            {!search && (
+              <Link href="/admin/crm/new" className="mt-3 inline-block text-sm text-[#E8315B] hover:underline">
+                + პირველი კომპანიის დამატება
+              </Link>
+            )}
           </div>
+        ) : (
           <table className="w-full">
             <thead className="bg-[#F5F6FA]">
               <tr>
@@ -95,7 +113,9 @@ export default async function CrmPage() {
                   <tr key={company.id} className="hover:bg-[#F5F6FA] transition-colors">
                     <td className="px-4 py-3">
                       <p className="text-sm font-medium text-[#1A1A2E]">{company.name}</p>
-                      {company.website && <p className="text-xs text-gray-400 truncate max-w-48">{company.website}</p>}
+                      {(company as any).slug && (
+                        <p className="text-xs text-gray-400">/crm/{(company as any).slug}</p>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <p className="text-sm text-gray-600">{company.industry ?? "—"}</p>
@@ -103,8 +123,8 @@ export default async function CrmPage() {
                     <td className="px-4 py-3">
                       {contact ? (
                         <div>
-                          <p className="text-sm text-gray-700">{contact.first_name} {contact.last_name ?? ""}</p>
-                          {contact.position && <p className="text-xs text-gray-400">{contact.position}</p>}
+                          <p className="text-sm text-gray-700">{contact.first_name} {(contact as any).last_name ?? ""}</p>
+                          {(contact as any).position && <p className="text-xs text-gray-400">{(contact as any).position}</p>}
                         </div>
                       ) : <span className="text-sm text-gray-300">—</span>}
                     </td>
@@ -114,7 +134,7 @@ export default async function CrmPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/crm/${company.id}`} className="text-xs text-[#E8315B] hover:underline font-medium">
+                      <Link href={companyHref(company)} className="text-xs text-[#E8315B] hover:underline font-medium">
                         გახსნა →
                       </Link>
                     </td>
@@ -123,17 +143,8 @@ export default async function CrmPage() {
               })}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {companies.length === 0 && (
-        <div className="bg-white rounded-xl border border-[#E5E5E5] p-16 text-center">
-          <p className="text-gray-400 text-sm">კომპანიები არ არის</p>
-          <Link href="/admin/crm/new" className="mt-3 inline-block text-sm text-[#E8315B] hover:underline">
-            + პირველი კომპანიის დამატება
-          </Link>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

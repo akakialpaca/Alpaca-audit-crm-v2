@@ -7,17 +7,27 @@ import { ActivityLogForm } from "./ActivityLogForm";
 import Link from "next/link";
 
 export default async function CompanyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: slugOrId } = await params;
   const svc = createServiceClient();
 
-  const [{ data: companyData }, { data: contactsData }] = await Promise.all([
-    svc.from("companies").select("*").eq("id", id).single(),
-    svc.from("contacts").select("*").eq("company_id", id).order("created_at", { ascending: true }),
-  ]);
+  // Support both slug and UUID (backward compat)
+  const { data: companyData } = await svc
+    .from("companies")
+    .select("*")
+    .or(`slug.eq.${slugOrId},id.eq.${slugOrId}`)
+    .maybeSingle();
 
   if (!companyData) notFound();
 
-  const company = companyData as Company;
+  const company = companyData as Company & { slug?: string };
+  const slug = company.slug ?? company.id;
+
+  const { data: contactsData } = await svc
+    .from("contacts")
+    .select("*")
+    .eq("company_id", company.id)
+    .order("created_at", { ascending: true });
+
   const contacts = (contactsData ?? []) as Contact[];
   const contactIds = contacts.map(c => c.id);
 
@@ -39,7 +49,6 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
   const activities = (activitiesRes.data ?? []) as ContactActivity[];
   const audits = (auditsRes.data ?? []) as any[];
-
   const stage = PIPELINE_STAGES.find(s => s.value === company.pipeline_stage);
 
   return (
@@ -49,7 +58,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A2E]">{company.name}</h1>
-            <div className="flex items-center gap-3 mt-1">
+            <div className="flex items-center gap-3 mt-1 flex-wrap">
               {company.website && (
                 <a href={company.website} target="_blank" rel="noopener noreferrer"
                   className="text-sm text-[#E8315B] hover:underline">{company.website}</a>
@@ -58,8 +67,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               <span className="text-xs text-gray-400">დამატებულია: {formatDate(company.created_at)}</span>
             </div>
           </div>
-          <Link href={`/admin/crm/${id}/edit`}
-            className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors">
+          <Link
+            href={`/admin/crm/${slug}/edit`}
+            className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors shrink-0 ml-4"
+          >
             ✏️ რედაქტირება
           </Link>
         </div>
@@ -67,8 +78,8 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
       {/* Pipeline Stage */}
       <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-        <p className="text-xs text-gray-500 mb-3 font-medium">PIPELINE სტადია</p>
-        <StageSelector companyId={id} currentStage={company.pipeline_stage} />
+        <p className="text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">Pipeline სტადია</p>
+        <StageSelector companyId={company.id} currentStage={company.pipeline_stage} />
         {company.notes && (
           <p className="text-sm text-gray-600 mt-4 pt-4 border-t border-[#E5E5E5]">{company.notes}</p>
         )}
@@ -79,7 +90,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-[#1A1A2E]">კონტაქტები ({contacts.length})</h2>
-            <Link href={`/admin/crm/${id}/contact/new`}
+            <Link href={`/admin/crm/${slug}/contact/new`}
               className="text-xs text-[#E8315B] hover:underline font-medium">
               + კონტაქტი
             </Link>
@@ -88,7 +99,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
           {contacts.length === 0 ? (
             <div className="bg-white rounded-xl border border-dashed border-[#E5E5E5] p-6 text-center">
               <p className="text-sm text-gray-400">კონტაქტი არ არის</p>
-              <Link href={`/admin/crm/${id}/contact/new`} className="mt-2 inline-block text-xs text-[#E8315B] hover:underline">
+              <Link href={`/admin/crm/${slug}/contact/new`} className="mt-2 inline-block text-xs text-[#E8315B] hover:underline">
                 + პირველი კონტაქტის დამატება
               </Link>
             </div>
@@ -99,8 +110,8 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                   <p className="font-semibold text-[#1A1A2E]">{c.first_name} {c.last_name ?? ""}</p>
                   {c.position && <p className="text-xs text-gray-500 mt-0.5">{c.position}</p>}
                 </div>
-                <Link href={`/admin/crm/${id}/contact/${c.id}/edit`}
-                  className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors">
+                <Link href={`/admin/crm/${slug}/contact/${c.id}/edit`}
+                  className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors shrink-0 ml-2">
                   ✏️
                 </Link>
               </div>
@@ -130,7 +141,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               {audits.map((a: any) => (
                 <Link key={a.id} href={`/admin/audits/${a.id}`}
                   className="flex items-center justify-between bg-white rounded-xl border border-[#E5E5E5] p-4 hover:border-[#E8315B] transition-colors">
-                  <div>
+                  <div className="min-w-0 mr-3">
                     <p className="text-sm font-medium text-[#1A1A2E] truncate max-w-52">{a.source_url}</p>
                     <p className="text-xs text-gray-400">{formatDate(a.deadline)}</p>
                   </div>
@@ -160,7 +171,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                   {a.type === "call" ? "📞" : a.type === "email" ? "✉️" : a.type === "meeting" ? "🤝" : "📝"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs font-medium text-gray-700">{ACTIVITY_LABELS[a.type]}</span>
                     <span className="text-xs text-gray-400">{formatDateTime(a.created_at)}</span>
                     {a.profiles && <span className="text-xs text-gray-400">· {(a.profiles as any).full_name}</span>}
