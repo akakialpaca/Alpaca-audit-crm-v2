@@ -18,12 +18,14 @@ export function AddSpecialistForm() {
 
     const form = e.currentTarget;
     const monthly_hours_raw = (form.elements.namedItem("monthly_hours") as HTMLInputElement)?.value;
+    const whatsapp_raw = (form.elements.namedItem("whatsapp_number") as HTMLInputElement)?.value?.trim();
     const data = {
       full_name: (form.elements.namedItem("full_name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
       password: (form.elements.namedItem("password") as HTMLInputElement).value,
       role,
       monthly_hours: role === "specialist" && monthly_hours_raw ? parseInt(monthly_hours_raw) : null,
+      whatsapp_number: role === "specialist" && whatsapp_raw ? whatsapp_raw : null,
     };
 
     const res = await fetch("/api/specialists", {
@@ -88,20 +90,34 @@ export function AddSpecialistForm() {
         </div>
 
         {role === "specialist" && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              ყოველთვიური საათები
-              <span className="text-xs text-gray-400 font-normal ml-1.5">(1 აუდიტი ≈ 1 საათი)</span>
-            </label>
-            <input
-              name="monthly_hours"
-              type="number"
-              min={1}
-              max={999}
-              placeholder="მაგ. 20"
-              className={inp}
-            />
-          </div>
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                ყოველთვიური საათები
+                <span className="text-xs text-gray-400 font-normal ml-1.5">(1 აუდიტი ≈ 1 საათი)</span>
+              </label>
+              <input
+                name="monthly_hours"
+                type="number"
+                min={1}
+                max={999}
+                placeholder="მაგ. 20"
+                className={inp}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                WhatsApp ნომერი
+                <span className="text-xs text-gray-400 font-normal ml-1.5">(notification-ებისთვის)</span>
+              </label>
+              <input
+                name="whatsapp_number"
+                type="tel"
+                placeholder="+995 5XX XXX XXX"
+                className={inp}
+              />
+            </div>
+          </>
         )}
 
         {error && (

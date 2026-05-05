@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import { sendNewAssignmentEmail } from "@/lib/resend";
+import { sendWhatsAppNewAudit } from "@/lib/twilio";
 
 export async function POST(req: Request) {
   const supabase = await createServerClient();
@@ -32,11 +33,11 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Send email if specialist assigned
+  // Send notifications if specialist assigned
   if (assigned_specialist_id && audit) {
     const { data: specialist } = await createServiceClient()
       .from("profiles")
-      .select("email, full_name")
+      .select("email, full_name, whatsapp_number")
       .eq("id", assigned_specialist_id)
       .single();
 
@@ -48,6 +49,15 @@ export async function POST(req: Request) {
         deadline,
         importance,
       }).catch(console.error);
+
+      if (specialist.whatsapp_number) {
+        await sendWhatsAppNewAudit({
+          toNumber: specialist.whatsapp_number,
+          specialistName: specialist.full_name,
+          sourceUrl: source_url,
+          deadline,
+        }).catch(console.error);
+      }
     }
   }
 

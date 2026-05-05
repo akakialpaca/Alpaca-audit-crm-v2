@@ -5,6 +5,10 @@ import {
   sendCorrectionEmail,
   sendCompletedEmail,
 } from "@/lib/resend";
+import {
+  sendWhatsAppReviewReady,
+  sendWhatsAppCorrection,
+} from "@/lib/twilio";
 
 export async function PATCH(
   req: Request,
@@ -18,7 +22,7 @@ export async function PATCH(
   const { data: profile } = await createServiceClient().from("profiles").select("role").eq("id", user.id).single();
   const role = profile?.role;
 
-  const { data: audit } = await supabase.from("audits").select("*, profiles!assigned_specialist_id(id, full_name, email)").eq("id", id).single();
+  const { data: audit } = await supabase.from("audits").select("*, profiles!assigned_specialist_id(id, full_name, email, whatsapp_number)").eq("id", id).single();
   if (!audit) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   if (role === "specialist" && audit.assigned_specialist_id !== user.id) {
@@ -76,7 +80,7 @@ export async function PATCH(
 
   const specialist = (audit as any).profiles;
 
-  // Email notifications
+  // Notifications (email + WhatsApp)
   try {
     if (status === "Review" && specialist) {
       await sendReviewRequestEmail({
@@ -84,6 +88,11 @@ export async function PATCH(
         specialistName: specialist.full_name,
         auditId: id,
       });
+      await sendWhatsAppReviewReady({
+        sourceUrl: audit.source_url,
+        specialistName: specialist.full_name,
+        auditId: id,
+      }).catch(console.error);
     } else if (status === "In Correction" && specialist) {
       await sendCorrectionEmail({
         specialistEmail: specialist.email,
@@ -92,6 +101,15 @@ export async function PATCH(
         comments: admin_comments ?? "",
         auditId: id,
       });
+      if (specialist.whatsapp_number) {
+        await sendWhatsAppCorrection({
+          toNumber: specialist.whatsapp_number,
+          specialistName: specialist.full_name,
+          sourceUrl: audit.source_url,
+          comments: admin_comments ?? "",
+          auditId: id,
+        }).catch(console.error);
+      }
     } else if (status === "Completed" && specialist) {
       await sendCompletedEmail({
         specialistEmail: specialist.email,
@@ -100,7 +118,7 @@ export async function PATCH(
       });
     }
   } catch (e) {
-    console.error("Email send failed:", e);
+    console.error("Notification failed:", e);
   }
 
   return NextResponse.json({ success: true });
