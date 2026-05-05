@@ -8,6 +8,7 @@ import {
 import {
   sendWhatsAppReviewReady,
   sendWhatsAppCorrection,
+  sendWhatsAppCompletedGroup,
 } from "@/lib/greenapi";
 
 export async function PATCH(
@@ -85,8 +86,16 @@ export async function PATCH(
     sendReviewRequestEmail({ sourceUrl: audit.source_url, specialistName: specialist.full_name, auditId: id }).catch(console.error);
   } else if (status === "In Correction" && specialist) {
     sendCorrectionEmail({ specialistEmail: specialist.email, specialistName: specialist.full_name, sourceUrl: audit.source_url, comments: admin_comments ?? "", auditId: id }).catch(console.error);
-  } else if (status === "Completed" && specialist) {
-    sendCompletedEmail({ specialistEmail: specialist.email, specialistName: specialist.full_name, sourceUrl: audit.source_url }).catch(console.error);
+  } else if (status === "Completed") {
+    if (specialist) {
+      sendCompletedEmail({ specialistEmail: specialist.email, specialistName: specialist.full_name, sourceUrl: audit.source_url }).catch(console.error);
+    }
+    sendWhatsAppCompletedGroup({
+      sourceUrl: audit.source_url,
+      specialistName: specialist?.full_name ?? "—",
+      auditResultUrl: audit.audit_result_url ?? "",
+      auditPassword: audit.audit_password ?? "",
+    }).catch(console.error);
   }
 
   // WhatsApp notifications (independent)

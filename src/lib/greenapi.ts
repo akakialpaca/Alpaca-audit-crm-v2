@@ -70,3 +70,21 @@ export async function sendWhatsAppReviewReady(opts: {
     `🔗 ${siteUrl}/admin/audits/${opts.auditId}`
   );
 }
+
+export async function sendWhatsAppCompletedGroup(opts: {
+  sourceUrl: string;
+  specialistName: string;
+  auditResultUrl: string;
+  auditPassword: string;
+}) {
+  const groupId = process.env.AUDIT_GROUP_CHAT_ID;
+  if (!groupId) return;
+  await sendWA(
+    groupId,
+    `✅ *დასრულებული აუდიტი*\n\n` +
+    `🌐 ${opts.sourceUrl}\n` +
+    `👤 ${opts.specialistName}\n\n` +
+    `🔗 ${opts.auditResultUrl || "—"}\n` +
+    `🔑 პაროლი: ${opts.auditPassword || "—"}`
+  );
+}
