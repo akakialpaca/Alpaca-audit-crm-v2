@@ -1,6 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { AddSpecialistForm } from "./AddSpecialistForm";
+import { EditSpecialistForm } from "./EditSpecialistForm";
 
 export default async function SpecialistsPage() {
   const svc = createServiceClient();
@@ -51,8 +52,19 @@ export default async function SpecialistsPage() {
                       ) : (
                         <p className="text-xs text-gray-400 mt-1">საათები არ არის მითითებული</p>
                       )}
+                      {s.whatsapp_number ? (
+                        <p className="text-xs text-green-600 mt-0.5">📱 {s.whatsapp_number}</p>
+                      ) : (
+                        <p className="text-xs text-gray-400 mt-0.5">WhatsApp არ არის მითითებული</p>
+                      )}
                       <p className="text-xs text-gray-400 mt-0.5">დამატებულია: {formatDate(s.created_at)}</p>
                     </div>
+                    <EditSpecialistForm
+                      id={s.id}
+                      full_name={s.full_name}
+                      whatsapp_number={s.whatsapp_number ?? null}
+                      monthly_hours={s.monthly_hours ?? null}
+                    />
                   </div>
                   <div className="flex gap-4 mt-4 pt-4 border-t border-[#E5E5E5]">
                     <Stat label="აქტიური" value={getCount(s.id, "In Progress") + getCount(s.id, "Pending")} color="text-blue-600" />
