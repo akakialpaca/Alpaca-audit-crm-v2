@@ -64,7 +64,7 @@ export async function sendWhatsAppReviewReady(opts: {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   await sendWA(
     adminWA,
-    `📋 შემოწმება მოლოდინშია!\n` +
+    `📋 საჭიროებს გადახედვას!\n` +
     `🌐 ${opts.sourceUrl}\n` +
     `👤 სპეციალისტი: ${opts.specialistName}\n` +
     `🔗 ${siteUrl}/admin/audits/${opts.auditId}`
