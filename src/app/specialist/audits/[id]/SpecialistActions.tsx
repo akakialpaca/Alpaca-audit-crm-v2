@@ -127,7 +127,10 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
   return (
     <div className="space-y-4">
       {audit.status === "Pending" && !audit.acknowledged_at && (
-        <div className="bg-white rounded-xl border-2 border-[#E8315B] p-6">
+        <div className="bg-white rounded-xl border-2 border-[#E8315B] p-6 space-y-3">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
           <button
             onClick={handleAcknowledge}
             disabled={loading}
