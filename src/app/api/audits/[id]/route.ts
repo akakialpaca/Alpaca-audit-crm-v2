@@ -80,45 +80,20 @@ export async function PATCH(
 
   const specialist = (audit as any).profiles;
 
-  // Notifications (email + WhatsApp)
-  try {
-    if (status === "Review" && specialist) {
-      await sendReviewRequestEmail({
-        sourceUrl: audit.source_url,
-        specialistName: specialist.full_name,
-        auditId: id,
-      });
-      await sendWhatsAppReviewReady({
-        sourceUrl: audit.source_url,
-        specialistName: specialist.full_name,
-        auditId: id,
-      }).catch(console.error);
-    } else if (status === "In Correction" && specialist) {
-      await sendCorrectionEmail({
-        specialistEmail: specialist.email,
-        specialistName: specialist.full_name,
-        sourceUrl: audit.source_url,
-        comments: admin_comments ?? "",
-        auditId: id,
-      });
-      if (specialist.whatsapp_number) {
-        await sendWhatsAppCorrection({
-          toNumber: specialist.whatsapp_number,
-          specialistName: specialist.full_name,
-          sourceUrl: audit.source_url,
-          comments: admin_comments ?? "",
-          auditId: id,
-        }).catch(console.error);
-      }
-    } else if (status === "Completed" && specialist) {
-      await sendCompletedEmail({
-        specialistEmail: specialist.email,
-        specialistName: specialist.full_name,
-        sourceUrl: audit.source_url,
-      });
-    }
-  } catch (e) {
-    console.error("Notification failed:", e);
+  // Email notifications (independent — failure doesn't block WhatsApp)
+  if (status === "Review" && specialist) {
+    sendReviewRequestEmail({ sourceUrl: audit.source_url, specialistName: specialist.full_name, auditId: id }).catch(console.error);
+  } else if (status === "In Correction" && specialist) {
+    sendCorrectionEmail({ specialistEmail: specialist.email, specialistName: specialist.full_name, sourceUrl: audit.source_url, comments: admin_comments ?? "", auditId: id }).catch(console.error);
+  } else if (status === "Completed" && specialist) {
+    sendCompletedEmail({ specialistEmail: specialist.email, specialistName: specialist.full_name, sourceUrl: audit.source_url }).catch(console.error);
+  }
+
+  // WhatsApp notifications (independent)
+  if (status === "Review") {
+    sendWhatsAppReviewReady({ sourceUrl: audit.source_url, specialistName: specialist?.full_name ?? "", auditId: id }).catch(console.error);
+  } else if (status === "In Correction" && specialist?.whatsapp_number) {
+    sendWhatsAppCorrection({ toNumber: specialist.whatsapp_number, specialistName: specialist.full_name, sourceUrl: audit.source_url, comments: admin_comments ?? "", auditId: id }).catch(console.error);
   }
 
   return NextResponse.json({ success: true });
