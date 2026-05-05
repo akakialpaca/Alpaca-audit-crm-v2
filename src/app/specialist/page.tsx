@@ -1,7 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
-import { Audit, AuditStatus, Importance, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, formatDate, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
 import Link from "next/link";
 
 export default async function SpecialistDashboard() {
@@ -75,7 +74,6 @@ function AuditCard({ audit }: { audit: Audit }) {
         </div>
         <div className="flex flex-col items-end gap-1.5 shrink-0">
           <StatusBadge status={audit.status as AuditStatus} />
-          <ImportanceBadge importance={audit.importance as Importance} />
         </div>
       </div>
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#E5E5E5]">

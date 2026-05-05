@@ -11,11 +11,37 @@ interface SpecialistStat {
   in_correction: number;
 }
 
-export default async function AdminDashboard() {
+const PERIODS = [
+  { value: "", label: "ყველა" },
+  { value: "week", label: "ეს კვირა" },
+  { value: "month", label: "ეს თვე" },
+];
+
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>;
+}) {
+  const { period } = await searchParams;
   const svc = createServiceClient();
 
+  let auditQuery = svc
+    .from("audits")
+    .select("*, profiles!assigned_specialist_id(id, full_name)")
+    .order("created_at", { ascending: false });
+
+  if (period === "week") {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    auditQuery = auditQuery.gte("created_at", d.toISOString());
+  } else if (period === "month") {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    auditQuery = auditQuery.gte("created_at", firstDay.toISOString());
+  }
+
   const [{ data: audits }, { data: specialists }] = await Promise.all([
-    svc.from("audits").select("*, profiles!assigned_specialist_id(id, full_name)").order("created_at", { ascending: false }),
+    auditQuery,
     svc.from("profiles").select("*").eq("role", "specialist"),
   ]);
 
@@ -36,12 +62,31 @@ export default async function AdminDashboard() {
   }));
 
   const recentAudits = all.slice(0, 8);
+  const currentPeriod = period ?? "";
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-bold text-[#1A1A2E]">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">SEO Audit მართვის სისტემა</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1A1A2E]">Dashboard</h1>
+          <p className="text-gray-500 text-sm mt-1">SEO Audit მართვის სისტემა</p>
+        </div>
+        {/* Period filter */}
+        <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
+          {PERIODS.map(p => (
+            <Link
+              key={p.value}
+              href={p.value ? `/admin?period=${p.value}` : "/admin"}
+              className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                currentPeriod === p.value
+                  ? "bg-white text-[#1A1A2E] shadow-sm font-semibold"
+                  : "text-gray-500 hover:text-[#1A1A2E]"
+              }`}
+            >
+              {p.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Stats */}

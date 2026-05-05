@@ -10,10 +10,12 @@ export async function POST(req: Request) {
   const { data: profile } = await svc.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { full_name, email, password } = await req.json();
+  const { full_name, email, password, role, monthly_hours } = await req.json();
   if (!full_name || !email || !password) {
     return NextResponse.json({ error: "ყველა ველი სავალდებულოა" }, { status: 400 });
   }
+
+  const userRole: string = ["specialist", "admin"].includes(role) ? role : "specialist";
 
   if (password.length < 8) {
     return NextResponse.json({ error: "პაროლი მინ. 8 სიმბოლო" }, { status: 400 });
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
     email,
     password,
     email_confirm: true,
-    user_metadata: { full_name, role: "specialist" },
+    user_metadata: { full_name, role: userRole },
   });
 
   if (error) {
@@ -31,6 +33,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "ეს ელ-ფოსტა უკვე გამოყენებულია" }, { status: 400 });
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (userRole === "specialist" && monthly_hours && newUser.user) {
+    await svc.from("profiles").update({ monthly_hours: Number(monthly_hours) }).eq("id", newUser.user.id);
   }
 
   return NextResponse.json({ user: newUser }, { status: 201 });
