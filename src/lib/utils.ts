@@ -10,6 +10,11 @@ export interface Profile {
   created_at: string;
 }
 
+export interface CorrectionEntry {
+  comment: string;
+  created_at: string;
+}
+
 export interface Audit {
   id: string;
   created_at: string;
@@ -24,6 +29,7 @@ export interface Audit {
   audit_result_url: string | null;
   audit_password: string | null;
   admin_comments: string | null;
+  correction_history: CorrectionEntry[] | null;
   notes: string | null;
   created_by: string | null;
   acknowledged_at: string | null;
@@ -64,6 +70,17 @@ export function formatDate(dateStr: string): string {
     year: "numeric",
     month: "long",
     day: "numeric",
+  });
+}
+
+export function formatDateTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleString("ka-GE", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 

@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Audit, AuditStatus, formatDate, isOverdue, isDueToday } from "@/lib/utils";
+import { Audit, AuditStatus, formatDate, formatDateTime, isOverdue, isDueToday } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { SpecialistActions } from "./SpecialistActions";
 import Link from "next/link";
@@ -77,12 +77,29 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
         </div>
       )}
 
-      {/* Admin correction comments */}
+      {/* Current correction comment */}
       {audit.status === "In Correction" && audit.admin_comments && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
           <h2 className="font-semibold text-orange-800 mb-2">⚠ კორექციის კომენტარი</h2>
-          <p className="text-sm text-orange-700">{audit.admin_comments}</p>
+          <p className="text-sm text-orange-700 whitespace-pre-wrap">{audit.admin_comments}</p>
         </div>
+      )}
+
+      {/* Correction history */}
+      {audit.correction_history && audit.correction_history.length > 0 && (
+        <details className="bg-orange-50 border border-orange-200 rounded-xl overflow-hidden">
+          <summary className="px-6 py-4 cursor-pointer font-semibold text-orange-800 select-none">
+            კორექციების ისტორია ({audit.correction_history.length})
+          </summary>
+          <div className="border-t border-orange-200 divide-y divide-orange-100">
+            {audit.correction_history.map((entry, i) => (
+              <div key={i} className="px-6 py-4">
+                <p className="text-xs text-orange-500 mb-1">{formatDateTime(entry.created_at)}</p>
+                <p className="text-sm text-orange-700 whitespace-pre-wrap">{entry.comment}</p>
+              </div>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* Actions */}

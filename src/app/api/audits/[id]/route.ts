@@ -76,6 +76,15 @@ export async function PATCH(
   if (audit_password !== undefined) updateData.audit_password = audit_password;
   if (admin_comments !== undefined) updateData.admin_comments = admin_comments;
 
+  if (status === "In Correction" && admin_comments) {
+    const history: Array<{ comment: string; created_at: string }> =
+      (audit as any).correction_history ?? [];
+    updateData.correction_history = [
+      ...history,
+      { comment: admin_comments, created_at: new Date().toISOString() },
+    ];
+  }
+
   const { error } = await supabase.from("audits").update(updateData).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

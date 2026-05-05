@@ -1,6 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { Audit, AuditStatus, Importance, STATUS_LABELS, formatDate, isOverdue } from "@/lib/utils";
+import { Audit, AuditStatus, Importance, STATUS_LABELS, formatDate, formatDateTime, isOverdue } from "@/lib/utils";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
 import { ReviewPanel } from "./ReviewPanel";
@@ -53,7 +53,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
             {
               label: "მიღების დადასტურება",
               value: audit.acknowledged_at
-                ? `✓ ${formatDate(audit.acknowledged_at)}`
+                ? `✓ ${formatDateTime(audit.acknowledged_at)}`
                 : audit.assigned_specialist_id ? "⏳ მოლოდინში" : "—"
             },
           ].map(({ label, value }) => (
@@ -91,12 +91,21 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
         </div>
       )}
 
-      {/* Previous comments */}
-      {audit.admin_comments && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-          <h2 className="font-semibold text-orange-800 mb-2">ადმინის კომენტარი</h2>
-          <p className="text-sm text-orange-700">{audit.admin_comments}</p>
-        </div>
+      {/* Correction history */}
+      {audit.correction_history && audit.correction_history.length > 0 && (
+        <details className="bg-orange-50 border border-orange-200 rounded-xl overflow-hidden">
+          <summary className="px-6 py-4 cursor-pointer font-semibold text-orange-800 select-none">
+            კორექციების ისტორია ({audit.correction_history.length})
+          </summary>
+          <div className="border-t border-orange-200 divide-y divide-orange-100">
+            {audit.correction_history.map((entry, i) => (
+              <div key={i} className="px-6 py-4">
+                <p className="text-xs text-orange-500 mb-1">{formatDateTime(entry.created_at)}</p>
+                <p className="text-sm text-orange-700 whitespace-pre-wrap">{entry.comment}</p>
+              </div>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* Review Panel */}
