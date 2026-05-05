@@ -143,7 +143,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
       {audit.status === "Pending" && audit.acknowledged_at && (
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
-          <p className="text-xs text-green-600 font-medium mb-3">✓ მიღება დადასტურებული</p>
+          <p className="text-xs text-green-600 font-medium mb-3">✓ მიღება დადასტურებულია</p>
           <p className="text-sm text-gray-600 mb-4">დაიწყე მუშაობა ამ დავალებაზე</p>
           <button
             onClick={handleStartProgress}
