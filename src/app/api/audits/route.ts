@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import { sendNewAssignmentEmail } from "@/lib/resend";
-import { sendWhatsAppNewAudit } from "@/lib/twilio";
+import { sendWhatsAppNewAudit } from "@/lib/greenapi";
 
 export async function POST(req: Request) {
   const supabase = await createServerClient();

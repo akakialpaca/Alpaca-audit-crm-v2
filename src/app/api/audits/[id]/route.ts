@@ -8,7 +8,7 @@ import {
 import {
   sendWhatsAppReviewReady,
   sendWhatsAppCorrection,
-} from "@/lib/twilio";
+} from "@/lib/greenapi";
 
 export async function PATCH(
   req: Request,
