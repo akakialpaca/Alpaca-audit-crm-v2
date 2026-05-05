@@ -44,7 +44,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
           {[
             { label: "აუდიტის ენა", value: audit.language },
             { label: "სამიზნე ბაზარი", value: audit.target_market },
-            { label: "კ/სიტყვების ენა", value: audit.keyword_languages?.join(", ") || "—" },
+            { label: "საძიებო სიტყვები", value: audit.keyword_languages?.join(", ") || "—" },
             { label: "ვადა", value: formatDate(audit.deadline) },
           ].map(({ label, value }) => (
             <div key={label}>
@@ -58,7 +58,7 @@ export default async function SpecialistAuditPage({ params }: { params: Promise<
       {/* Admin notes */}
       {audit.notes && (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h2 className="font-semibold text-blue-800 mb-2">📋 ადმინის შენიშვნა</h2>
+          <h2 className="font-semibold text-blue-800 mb-2">⚠️ აუცილებლად გასათვალისწინებელი</h2>
           <p className="text-sm text-blue-700">{audit.notes}</p>
         </div>
       )}

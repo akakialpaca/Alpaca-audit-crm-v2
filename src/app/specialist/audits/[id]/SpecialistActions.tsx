@@ -13,13 +13,26 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
   if (audit.status === "Completed") {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-        <p className="text-green-700 font-semibold">✓ დავალება დასრულებულია</p>
+      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+        <p className="text-green-700 font-semibold text-center">✓ დავალება დასრულებულია</p>
         {audit.audit_result_url && (
-          <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-[#E8315B] hover:underline mt-2 block">
-            აუდიტის ნახვა →
-          </a>
+          <div className="mt-4 space-y-3">
+            <div>
+              <p className="text-xs text-gray-500 mb-1">აუდიტის ლინკი</p>
+              <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-[#E8315B] hover:underline break-all font-medium">
+                {audit.audit_result_url} →
+              </a>
+            </div>
+            {audit.audit_password && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1">პაროლი</p>
+                <span className="inline-block text-sm font-mono bg-white border border-green-200 px-3 py-1.5 rounded-lg text-[#1A1A2E] select-all">
+                  {audit.audit_password}
+                </span>
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
@@ -27,13 +40,26 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
   if (audit.status === "Review") {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
-        <p className="text-yellow-700 font-semibold">⏳ შემოწმებაში — ადმინი განიხილავს</p>
+      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <p className="text-yellow-700 font-semibold text-center">⏳ შემოწმებაში — ადმინი განიხილავს</p>
         {audit.audit_result_url && (
-          <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-[#E8315B] hover:underline mt-2 block">
-            წარდგენილი აუდიტი →
-          </a>
+          <div className="mt-4 space-y-3">
+            <div>
+              <p className="text-xs text-gray-500 mb-1">წარდგენილი აუდიტი</p>
+              <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-[#E8315B] hover:underline break-all font-medium">
+                {audit.audit_result_url} →
+              </a>
+            </div>
+            {audit.audit_password && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1">პაროლი</p>
+                <span className="inline-block text-sm font-mono bg-white border border-yellow-200 px-3 py-1.5 rounded-lg text-[#1A1A2E] select-all">
+                  {audit.audit_password}
+                </span>
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
