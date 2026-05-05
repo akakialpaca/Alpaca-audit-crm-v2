@@ -68,17 +68,9 @@ export function EditCompanyForm({ companyId, companySlug, initial }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#EBEBF0] p-6 space-y-5">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">სახელი *</label>
-          <input value={name} onChange={e => setName(e.target.value)} className={inp} required />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">URL სახელი (slug)</label>
-          <input value={slug} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-            placeholder="magalitad-econsule" className={inp} />
-          <p className="text-xs text-gray-400 mt-1">/admin/crm/{slug || "..."}</p>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">კომპანიის სახელი *</label>
+        <input value={name} onChange={e => setName(e.target.value)} className={inp} required />
       </div>
 
       <div>
@@ -109,6 +101,20 @@ export function EditCompanyForm({ companyId, companySlug, initial }: Props) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">შენიშვნები</label>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className={`${inp} resize-none`} />
+      </div>
+
+      <div className="border-t border-[#EBEBF0] pt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">სისტემის URL-სახელი (slug)</label>
+        <p className="text-xs text-gray-400 mb-2">მხოლოდ ლათინური ასოები, ციფრები და ტირე · მაგ: <span className="font-mono">econsule</span></p>
+        <input
+          value={slug}
+          onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+          placeholder="econsule"
+          className={inp}
+        />
+        {slug && (
+          <p className="text-xs text-gray-400 mt-1.5 font-mono">/admin/crm/<span className="text-[#E8315B]">{slug}</span></p>
+        )}
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>}

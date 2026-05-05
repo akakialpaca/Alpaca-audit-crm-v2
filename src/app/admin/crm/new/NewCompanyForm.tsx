@@ -96,23 +96,16 @@ export function NewCompanyForm() {
       <div className="bg-white rounded-xl border border-[#EBEBF0] p-6 space-y-5">
         <h2 className="font-semibold text-[#1A1A2E]">კომპანიის ინფო</h2>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">სახელი *</label>
-            <input value={companyName}
-              onChange={e => {
-                setCompanyName(e.target.value);
-                if (!slug) setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-"));
-              }}
-              placeholder="Alpaca LLC" className={inp} required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">URL სახელი (slug)</label>
-            <input value={slug}
-              onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-              placeholder="alpaca-llc" className={inp} />
-            <p className="text-xs text-gray-400 mt-1">/admin/crm/{slug || "..."}</p>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">კომპანიის სახელი *</label>
+          <input value={companyName} onChange={e => setCompanyName(e.target.value)}
+            placeholder="Alpaca LLC" className={inp} required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">ვებსაიტი</label>
+          <input value={website} onChange={e => setWebsite(e.target.value)}
+            placeholder="https://example.com" className={inp} />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -138,6 +131,20 @@ export function NewCompanyForm() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">შენიშვნები</label>
           <textarea value={companyNotes} onChange={e => setCompanyNotes(e.target.value)} rows={2} className={`${inp} resize-none`} placeholder="დამატებითი ინფო..." />
+        </div>
+
+        <div className="border-t border-[#EBEBF0] pt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">სისტემის URL-სახელი (slug)</label>
+          <p className="text-xs text-gray-400 mb-2">მხოლოდ ლათინური ასოები, ციფრები და ტირე · მაგ: <span className="font-mono">econsule</span></p>
+          <input
+            value={slug}
+            onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+            placeholder="econsule"
+            className={inp}
+          />
+          {slug && (
+            <p className="text-xs text-gray-400 mt-1.5 font-mono">/admin/crm/<span className="text-[#E8315B]">{slug}</span></p>
+          )}
         </div>
       </div>
 
