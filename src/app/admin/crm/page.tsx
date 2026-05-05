@@ -15,6 +15,7 @@ export default async function CrmPage({ searchParams }: { searchParams: Promise<
   let query = svc
     .from("companies")
     .select("*, contacts(id, first_name, last_name, position, email)")
+    .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
   if (search) query = query.ilike("name", `%${search}%`);
@@ -58,8 +59,15 @@ export default async function CrmPage({ searchParams }: { searchParams: Promise<
                     const contact = company.contacts?.[0];
                     return (
                       <Link key={company.id} href={companyHref(company)}>
-                        <div className="bg-white border border-[#E5E5E5] rounded-xl p-4 hover:border-[#E8315B] hover:shadow-sm transition-all cursor-pointer">
-                          <p className="font-semibold text-[#1A1A2E] text-sm truncate">{company.name}</p>
+                        <div className={`border rounded-xl p-4 hover:shadow-sm transition-all cursor-pointer ${
+                          (company as any).status === "blacklisted"
+                            ? "bg-orange-50 border-orange-200 hover:border-orange-400"
+                            : "bg-white border-[#E5E5E5] hover:border-[#E8315B]"
+                        }`}>
+                          <div className="flex items-start justify-between gap-1">
+                            <p className="font-semibold text-[#1A1A2E] text-sm truncate">{company.name}</p>
+                            {(company as any).status === "blacklisted" && <span className="text-xs shrink-0">🚫</span>}
+                          </div>
                           {company.industry && <p className="text-xs text-gray-400 mt-0.5">{company.industry}</p>}
                           {contact && (
                             <p className="text-xs text-gray-500 mt-2 truncate">
@@ -112,7 +120,12 @@ export default async function CrmPage({ searchParams }: { searchParams: Promise<
                 return (
                   <tr key={company.id} className="hover:bg-[#F5F6FA] transition-colors">
                     <td className="px-4 py-3">
-                      <p className="text-sm font-medium text-[#1A1A2E]">{company.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-[#1A1A2E]">{company.name}</p>
+                        {(company as any).status === "blacklisted" && (
+                          <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-medium">🚫 შავი სია</span>
+                        )}
+                      </div>
                       {(company as any).slug && (
                         <p className="text-xs text-gray-400">/crm/{(company as any).slug}</p>
                       )}

@@ -4,6 +4,7 @@ import { Company, Contact, ContactActivity, ACTIVITY_LABELS, PIPELINE_STAGES, fo
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StageSelector } from "./StageSelector";
 import { ActivityLogForm } from "./ActivityLogForm";
+import { CompanyStatusActions } from "./CompanyStatusActions";
 import Link from "next/link";
 
 export default async function CompanyDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -67,14 +68,39 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               <span className="text-xs text-gray-400">დამატებულია: {formatDate(company.created_at)}</span>
             </div>
           </div>
-          <Link
-            href={`/admin/crm/${slug}/edit`}
-            className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors shrink-0 ml-4"
-          >
-            ✏️ რედაქტირება
-          </Link>
+          <div className="flex items-center gap-2 shrink-0 ml-4">
+            <Link
+              href={`/admin/crm/${slug}/edit`}
+              className="text-xs text-gray-400 hover:text-[#E8315B] transition-colors"
+            >
+              ✏️ რედაქტირება
+            </Link>
+            <CompanyStatusActions
+              companyId={company.id}
+              companySlug={slug}
+              currentStatus={(company as any).status ?? "active"}
+              statusReason={(company as any).status_reason ?? null}
+              statusChangedAt={(company as any).status_changed_at ?? null}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Status banners */}
+      {(company as any).status === "blacklisted" && (
+        <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-xl px-5 py-4">
+          <span className="text-xl leading-none shrink-0">🚫</span>
+          <div>
+            <p className="font-semibold text-orange-800 text-sm">შავ სიაში შეყვანილი კომპანია</p>
+            {(company as any).status_reason && (
+              <p className="text-sm text-orange-700 mt-0.5">{(company as any).status_reason}</p>
+            )}
+            {(company as any).status_changed_at && (
+              <p className="text-xs text-orange-500 mt-1">{formatDateTime((company as any).status_changed_at)}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Pipeline Stage */}
       <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
