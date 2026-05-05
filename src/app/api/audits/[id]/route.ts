@@ -33,9 +33,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (audit.acknowledged_at) {
-      return NextResponse.json({ success: true }); // already acknowledged
+      return NextResponse.json({ success: true });
     }
-    const { error } = await supabase.from("audits")
+    const { error } = await createServiceClient().from("audits")
       .update({ acknowledged_at: new Date().toISOString() })
       .eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
