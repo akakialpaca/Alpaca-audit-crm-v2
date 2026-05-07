@@ -1,6 +1,8 @@
+export const runtime = "edge";
+
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createServerClient, createAdminClient } from "@/lib/supabase/server";
+import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import { SpecialistSidebar } from "@/components/specialist/Sidebar";
 
 export const metadata: Metadata = {
@@ -9,18 +11,17 @@ export const metadata: Metadata = {
 
 export default async function SpecialistLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  if (!user) redirect("/login");
+  if (!session) redirect("/login");
 
-  const admin = await createAdminClient();
-  const { data: profile } = await admin
+  const { data: profile } = await createServiceClient()
     .from("profiles")
     .select("role, full_name, email")
-    .eq("id", user.id)
+    .eq("id", session.user.id)
     .maybeSingle();
 
-  const role = profile?.role ?? (user.user_metadata?.role as string);
+  const role = profile?.role ?? (session.user.user_metadata?.role as string);
   if (role === "admin") redirect("/admin");
 
   return (
