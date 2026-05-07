@@ -2,16 +2,19 @@ function INSTANCE() { return process.env.GREEN_API_INSTANCE!; }
 function TOKEN() { return process.env.GREEN_API_TOKEN!; }
 
 function toChatId(phone: string): string {
+  if (phone.includes("@")) return phone;
   const digits = phone.replace(/[^\d]/g, "");
   return `${digits}@c.us`;
 }
 
-async function sendWA(to: string, body: string): Promise<void> {
+async function sendWA(to: string, body: string, mentions?: string[]): Promise<void> {
   const url = `https://api.green-api.com/waInstance${INSTANCE()}/sendMessage/${TOKEN()}`;
+  const payload: Record<string, unknown> = { chatId: toChatId(to), message: body };
+  if (mentions?.length) payload.mentionedPhones = mentions;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chatId: toChatId(to), message: body }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const text = await res.text();
@@ -26,14 +29,18 @@ export async function sendWhatsAppNewAudit(opts: {
   deadline: string;
   auditId: string;
 }) {
+  const groupId = process.env.WA_GROUP_CHAT_ID;
+  if (!groupId) return;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
+  const digits = opts.toNumber.replace(/[^\d]/g, "");
   await sendWA(
-    opts.toNumber,
-    `🚨 შენ დაგემატა ახალი აუდიტი\n\n` +
+    groupId,
+    `@${digits} 🚨 შენ დაგემატა ახალი აუდიტი\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `*დედლაინი:* ${opts.deadline}\n\n` +
     `${siteUrl}/specialist/audits/${opts.auditId}\n\n` +
-    `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`
+    `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`,
+    [digits]
   );
 }
 
@@ -44,13 +51,17 @@ export async function sendWhatsAppCorrection(opts: {
   comments: string;
   auditId: string;
 }) {
+  const groupId = process.env.WA_GROUP_CHAT_ID;
+  if (!groupId) return;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
+  const digits = opts.toNumber.replace(/[^\d]/g, "");
   await sendWA(
-    opts.toNumber,
-    `⚠️ კორექცია საჭიროა!\n\n` +
+    groupId,
+    `@${digits} ⚠️ კორექცია საჭიროა!\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `💬 ${opts.comments}\n\n` +
-    `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`
+    `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`,
+    [digits]
   );
 }
 
@@ -59,15 +70,18 @@ export async function sendWhatsAppReviewReady(opts: {
   sourceUrl: string;
   auditId: string;
 }) {
-  const adminWA = process.env.ADMIN_WHATSAPP;
-  if (!adminWA) return;
+  const groupId = process.env.WA_GROUP_CHAT_ID;
+  if (!groupId) return;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
+  const adminWA = process.env.ADMIN_WHATSAPP;
+  const digits = adminWA?.replace(/[^\d]/g, "") ?? "";
   await sendWA(
-    adminWA,
-    `📋 საჭიროებს გადახედვას!\n` +
+    groupId,
+    `${digits ? `@${digits} ` : ""}📋 საჭიროებს გადახედვას!\n` +
     `🌐 ${opts.sourceUrl}\n` +
     `👤 სპეციალისტი: ${opts.specialistName}\n` +
-    `🔗 ${siteUrl}/admin/audits/${opts.auditId}`
+    `🔗 ${siteUrl}/admin/audits/${opts.auditId}`,
+    digits ? [digits] : []
   );
 }
 
@@ -77,7 +91,7 @@ export async function sendWhatsAppCompletedGroup(opts: {
   auditResultUrl: string;
   auditPassword: string;
 }) {
-  const groupId = process.env.AUDIT_GROUP_CHAT_ID;
+  const groupId = process.env.WA_GROUP_CHAT_ID;
   if (!groupId) return;
   await sendWA(
     groupId,
