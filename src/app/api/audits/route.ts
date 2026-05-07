@@ -17,6 +17,9 @@ export async function POST(req: Request) {
   if (!source_url || !language || !target_market || !importance || !deadline) {
     return NextResponse.json({ error: "შევსება სავალდებულოა" }, { status: 400 });
   }
+  if (!assigned_specialist_id) {
+    return NextResponse.json({ error: "სპეციალისტის მიმაგრება სავალდებულოა" }, { status: 400 });
+  }
 
   const { data: audit, error } = await supabase.from("audits").insert({
     source_url,

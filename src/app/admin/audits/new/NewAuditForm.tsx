@@ -56,6 +56,8 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
 
     if (markets.length === 0) { setError("სამიზნე ბაზარი სავალდებულოა"); return; }
     if (!language) { setError("აუდიტის ენა სავალდებულოა"); return; }
+    const specialistId = (form.elements.namedItem("assigned_specialist_id") as HTMLSelectElement).value;
+    if (!specialistId) { setError("სპეციალისტის მიმაგრება სავალდებულოა"); return; }
 
     setLoading(true);
     const form = e.currentTarget;
@@ -208,9 +210,9 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
         </Field>
       </div>
 
-      <Field label="სპეციალისტი">
+      <Field label="სპეციალისტი *">
         <select name="assigned_specialist_id" className={inp}>
-          <option value="">დანიშვნის გარეშე</option>
+          <option value="">აირჩიეთ სპეციალისტი...</option>
           {specialists.map(s => (
             <option key={s.id} value={s.id}>{s.full_name} ({s.email})</option>
           ))}
