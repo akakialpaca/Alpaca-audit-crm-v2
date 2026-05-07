@@ -164,12 +164,11 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">აუდიტის URL *</label>
             <input
-              type="url"
+              type="text"
               value={resultUrl}
               onChange={e => setResultUrl(e.target.value)}
               placeholder="https://docs.google.com/..."
               className={inputClass}
-              required
             />
           </div>
 
