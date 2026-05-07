@@ -7,14 +7,12 @@ function toChatId(phone: string): string {
   return `${digits}@c.us`;
 }
 
-async function sendWA(to: string, body: string, mentions?: string[]): Promise<void> {
+async function sendWA(to: string, body: string): Promise<void> {
   const url = `https://api.green-api.com/waInstance${INSTANCE()}/sendMessage/${TOKEN()}`;
-  const payload: Record<string, unknown> = { chatId: toChatId(to), message: body };
-  if (mentions?.length) payload.mentionedPhones = mentions;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ chatId: toChatId(to), message: body }),
   });
   if (!res.ok) {
     const text = await res.text();
@@ -40,8 +38,7 @@ export async function sendWhatsAppNewAudit(opts: {
     `🌐 ${opts.sourceUrl}\n\n` +
     `*დედლაინი:* ${opts.deadline}\n\n` +
     `${siteUrl}/specialist/audits/${opts.auditId}\n\n` +
-    `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`,
-    digits ? [digits] : []
+    `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`
   );
 }
 
@@ -62,8 +59,7 @@ export async function sendWhatsAppCorrection(opts: {
     `${mention}⚠️ საჭიროებს ჩასწორებებს!\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `💬 ${opts.comments}\n\n` +
-    `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`,
-    digits ? [digits] : []
+    `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`
   );
 }
 
@@ -82,8 +78,7 @@ export async function sendWhatsAppReviewReady(opts: {
     `${digits ? `@${digits} ` : ""}📋 საჭიროებს გადახედვას!\n` +
     `🌐 ${opts.sourceUrl}\n` +
     `👤 სპეციალისტი: ${opts.specialistName}\n` +
-    `🔗 ${siteUrl}/admin/audits/${opts.auditId}`,
-    digits ? [digits] : []
+    `🔗 ${siteUrl}/admin/audits/${opts.auditId}`
   );
 }
 
