@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Audit } from "@/lib/utils";
 
 export function ReviewPanel({ audit }: { audit: Audit & { profiles: { id: string; full_name: string; email: string } | null } }) {
-  const router = useRouter();
   const [comments, setComments] = useState(audit.admin_comments ?? "");
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
 
-  if (audit.status !== "Review" && audit.status !== "In Correction") {
-    if (audit.status === "Completed") {
+  if (done || (audit.status !== "Review" && audit.status !== "In Correction")) {
+    if (done || audit.status === "Completed") {
       return (
         <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
           <p className="text-green-700 font-medium">✓ აუდიტი დასრულებულია</p>
@@ -45,7 +44,7 @@ export function ReviewPanel({ audit }: { audit: Audit & { profiles: { id: string
       return;
     }
 
-    router.refresh();
+    if (newStatus === "Completed") setDone(true);
     setLoading(null);
   }
 

@@ -1,34 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Audit } from "@/lib/utils";
 
 export function SpecialistActions({ audit }: { audit: Audit }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resultUrl, setResultUrl] = useState(audit.audit_result_url ?? "");
   const [password, setPassword] = useState(audit.audit_password ?? "");
+  const [currentStatus, setCurrentStatus] = useState(audit.status);
+  const [acknowledgedAt, setAcknowledgedAt] = useState(audit.acknowledged_at);
+  const [submittedUrl, setSubmittedUrl] = useState(audit.audit_result_url ?? "");
+  const [submittedPassword, setSubmittedPassword] = useState(audit.audit_password ?? "");
 
-  if (audit.status === "Completed") {
+  if (currentStatus === "Completed") {
     return (
       <div className="bg-green-50 border border-green-200 rounded-xl p-6">
         <p className="text-green-700 font-semibold text-center">✓ დავალება დასრულებულია</p>
-        {audit.audit_result_url && (
+        {submittedUrl && (
           <div className="mt-4 space-y-3">
             <div>
               <p className="text-xs text-gray-500 mb-1">აუდიტის ლინკი</p>
-              <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
+              <a href={submittedUrl} target="_blank" rel="noopener noreferrer"
                 className="text-sm text-[#E8315B] hover:underline break-all font-medium">
-                {audit.audit_result_url} →
+                {submittedUrl} →
               </a>
             </div>
-            {audit.audit_password && (
+            {submittedPassword && (
               <div>
                 <p className="text-xs text-gray-500 mb-1">პაროლი</p>
                 <span className="inline-block text-sm font-mono bg-white border border-green-200 px-3 py-1.5 rounded-lg text-[#1A1A2E] select-all">
-                  {audit.audit_password}
+                  {submittedPassword}
                 </span>
               </div>
             )}
@@ -38,24 +40,24 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
     );
   }
 
-  if (audit.status === "Review") {
+  if (currentStatus === "Review") {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
         <p className="text-yellow-700 font-semibold text-center">⏳ შემოწმებაში — ადმინი განიხილავს</p>
-        {audit.audit_result_url && (
+        {submittedUrl && (
           <div className="mt-4 space-y-3">
             <div>
               <p className="text-xs text-gray-500 mb-1">წარდგენილი აუდიტი</p>
-              <a href={audit.audit_result_url} target="_blank" rel="noopener noreferrer"
+              <a href={submittedUrl} target="_blank" rel="noopener noreferrer"
                 className="text-sm text-[#E8315B] hover:underline break-all font-medium">
-                {audit.audit_result_url} →
+                {submittedUrl} →
               </a>
             </div>
-            {audit.audit_password && (
+            {submittedPassword && (
               <div>
                 <p className="text-xs text-gray-500 mb-1">პაროლი</p>
                 <span className="inline-block text-sm font-mono bg-white border border-yellow-200 px-3 py-1.5 rounded-lg text-[#1A1A2E] select-all">
-                  {audit.audit_password}
+                  {submittedPassword}
                 </span>
               </div>
             )}
@@ -77,7 +79,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
       const { error } = await res.json();
       setError(error ?? "შეცდომა");
     } else {
-      router.refresh();
+      setAcknowledgedAt(new Date().toISOString());
     }
     setLoading(false);
   }
@@ -94,7 +96,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
       const { error } = await res.json();
       setError(error ?? "შეცდომა");
     } else {
-      router.refresh();
+      setCurrentStatus("In Progress");
     }
     setLoading(false);
   }
@@ -117,7 +119,9 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
       const { error } = await res.json();
       setError(error ?? "შეცდომა");
     } else {
-      router.refresh();
+      setSubmittedUrl(resultUrl);
+      setSubmittedPassword(password);
+      setCurrentStatus("Review");
     }
     setLoading(false);
   }
@@ -126,7 +130,7 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
 
   return (
     <div className="space-y-4">
-      {audit.status === "Pending" && !audit.acknowledged_at && (
+      {currentStatus === "Pending" && !acknowledgedAt && (
         <div className="bg-white rounded-xl border-2 border-[#E8315B] p-6 space-y-3">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>
@@ -141,10 +145,13 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
         </div>
       )}
 
-      {audit.status === "Pending" && audit.acknowledged_at && (
+      {currentStatus === "Pending" && acknowledgedAt && (
         <div className="bg-white rounded-xl border border-[#E5E5E5] p-6">
           <p className="text-xs text-green-600 font-medium mb-3">✓ მიღება დადასტურებულია</p>
           <p className="text-sm text-gray-600 mb-4">დაიწყე მუშაობა ამ დავალებაზე</p>
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700 mb-3">{error}</div>
+          )}
           <button
             onClick={handleStartProgress}
             disabled={loading}
@@ -155,10 +162,10 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
         </div>
       )}
 
-      {(audit.status === "In Progress" || audit.status === "In Correction") && (
+      {(currentStatus === "In Progress" || currentStatus === "In Correction") && (
         <form onSubmit={handleSubmitReview} className="bg-white rounded-xl border border-[#E5E5E5] p-6 space-y-4">
           <h2 className="font-semibold text-[#1A1A2E]">
-            {audit.status === "In Correction" ? "კორექციის შემდეგ გაგზავნა" : "შედეგის გაგზავნა შესამოწმებლად"}
+            {currentStatus === "In Correction" ? "კორექციის შემდეგ გაგზავნა" : "შედეგის გაგზავნა შესამოწმებლად"}
           </h2>
 
           <div>
@@ -195,10 +202,6 @@ export function SpecialistActions({ audit }: { audit: Audit }) {
             {loading ? "..." : "გაგზავნა შესამოწმებლად →"}
           </button>
         </form>
-      )}
-
-      {error && !["Pending", "In Progress", "In Correction"].includes(audit.status) && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">{error}</div>
       )}
     </div>
   );
