@@ -110,8 +110,8 @@ export async function PATCH(
   // WhatsApp notifications (independent)
   if (status === "Review") {
     sendWhatsAppReviewReady({ sourceUrl: audit.source_url, specialistName: specialist?.full_name ?? "", auditId: id }).catch(console.error);
-  } else if (status === "In Correction" && specialist?.whatsapp_number) {
-    sendWhatsAppCorrection({ toNumber: specialist.whatsapp_number, specialistName: specialist.full_name, sourceUrl: audit.source_url, comments: admin_comments ?? "", auditId: id }).catch(console.error);
+  } else if (status === "In Correction") {
+    sendWhatsAppCorrection({ toNumber: specialist?.whatsapp_number ?? "", specialistName: specialist?.full_name ?? "", sourceUrl: audit.source_url, comments: admin_comments ?? "", auditId: id }).catch(console.error);
   }
 
   return NextResponse.json({ success: true });

@@ -51,15 +51,13 @@ export async function POST(req: Request) {
         importance,
       }).catch(console.error);
 
-      if (specialist.whatsapp_number) {
-        await sendWhatsAppNewAudit({
-          toNumber: specialist.whatsapp_number,
-          specialistName: specialist.full_name,
-          sourceUrl: source_url,
-          deadline,
-          auditId: audit.id,
-        }).catch(console.error);
-      }
+      await sendWhatsAppNewAudit({
+        toNumber: specialist.whatsapp_number ?? "",
+        specialistName: specialist.full_name,
+        sourceUrl: source_url,
+        deadline,
+        auditId: audit.id,
+      }).catch(console.error);
     }
   }
 

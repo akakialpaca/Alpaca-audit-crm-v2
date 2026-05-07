@@ -33,14 +33,15 @@ export async function sendWhatsAppNewAudit(opts: {
   if (!groupId) return;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   const digits = opts.toNumber.replace(/[^\d]/g, "");
+  const mention = digits ? `@${digits} ` : "";
   await sendWA(
     groupId,
-    `@${digits} 🚨 შენ დაგემატა ახალი აუდიტი\n\n` +
+    `${mention}🚨 შენ დაგემატა ახალი აუდიტი\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `*დედლაინი:* ${opts.deadline}\n\n` +
     `${siteUrl}/specialist/audits/${opts.auditId}\n\n` +
     `*გთხოვ სისტემაში აუდიტი მინიშნო როგორც მიღებული*`,
-    [digits]
+    digits ? [digits] : []
   );
 }
 
@@ -55,13 +56,14 @@ export async function sendWhatsAppCorrection(opts: {
   if (!groupId) return;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alpaca-audit-crm.vercel.app";
   const digits = opts.toNumber.replace(/[^\d]/g, "");
+  const mention = digits ? `@${digits} ` : "";
   await sendWA(
     groupId,
-    `@${digits} ⚠️ საჭიროებს ჩასწორებებს!\n\n` +
+    `${mention}⚠️ საჭიროებს ჩასწორებებს!\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `💬 ${opts.comments}\n\n` +
     `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`,
-    [digits]
+    digits ? [digits] : []
   );
 }
 
