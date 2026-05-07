@@ -45,9 +45,9 @@ export function DeleteAuditButton({ auditId }: { auditId: string }) {
   return (
     <button
       onClick={() => setConfirm(true)}
-      className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+      className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors font-medium"
     >
-      🗑 წაშლა
+      წაშლა
     </button>
   );
 }
