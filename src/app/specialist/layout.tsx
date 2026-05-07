@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient, createAdminClient } from "@/lib/supabase/server";
 import { SpecialistSidebar } from "@/components/specialist/Sidebar";
+
+export const metadata: Metadata = {
+  title: "Alpaca Audits",
+};
 
 export default async function SpecialistLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();

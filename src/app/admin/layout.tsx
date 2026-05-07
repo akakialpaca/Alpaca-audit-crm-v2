@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient, createAdminClient } from "@/lib/supabase/server";
 import { AdminSidebar } from "@/components/admin/Sidebar";
+
+export const metadata: Metadata = {
+  title: "Alpaca CRM",
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
