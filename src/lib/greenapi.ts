@@ -57,7 +57,7 @@ export async function sendWhatsAppCorrection(opts: {
   const digits = opts.toNumber.replace(/[^\d]/g, "");
   await sendWA(
     groupId,
-    `@${digits} ⚠️ კორექცია საჭიროა!\n\n` +
+    `@${digits} ⚠️ საჭიროებს ჩასწორებებს!\n\n` +
     `🌐 ${opts.sourceUrl}\n\n` +
     `💬 ${opts.comments}\n\n` +
     `🔗 ${siteUrl}/specialist/audits/${opts.auditId}`,
