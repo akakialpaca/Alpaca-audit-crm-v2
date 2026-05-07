@@ -4,6 +4,7 @@ import { Audit, AuditStatus, Importance, STATUS_LABELS, formatDate, formatDateTi
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ImportanceBadge } from "@/components/ui/ImportanceBadge";
 import { ReviewPanel } from "./ReviewPanel";
+import { DeleteAuditButton } from "./DeleteAuditButton";
 import Link from "next/link";
 
 export default async function AuditDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -37,6 +38,7 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
             )}
           </div>
         </div>
+        <DeleteAuditButton auditId={audit.id} />
       </div>
 
       {/* Details */}
