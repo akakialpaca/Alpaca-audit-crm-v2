@@ -53,6 +53,7 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    const form = e.currentTarget;
 
     if (markets.length === 0) { setError("სამიზნე ბაზარი სავალდებულოა"); return; }
     if (!language) { setError("აუდიტის ენა სავალდებულოა"); return; }
@@ -60,7 +61,6 @@ export function NewAuditForm({ specialists }: { specialists: Specialist[] }) {
     if (!specialistId) { setError("სპეციალისტის მიმაგრება სავალდებულოა"); return; }
 
     setLoading(true);
-    const form = e.currentTarget;
 
     const data = {
       source_url: (form.elements.namedItem("source_url") as HTMLInputElement).value,
