@@ -6,6 +6,16 @@ export async function GET(req: Request) {
   const search = searchParams.get("search") ?? "";
   const svc = createServiceClient();
 
+  // Find company IDs matching the search term
+  let companyIds: string[] = [];
+  if (search) {
+    const { data: matchedCompanies } = await svc
+      .from("companies")
+      .select("id")
+      .ilike("name", `%${search}%`);
+    companyIds = (matchedCompanies ?? []).map((c: { id: string }) => c.id);
+  }
+
   let query = svc
     .from("contacts")
     .select("*, company:companies(id, name)")
@@ -13,9 +23,12 @@ export async function GET(req: Request) {
     .limit(20);
 
   if (search) {
-    query = query.or(
-      `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`
-    );
+    const nameEmailFilter = `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`;
+    if (companyIds.length > 0) {
+      query = query.or(`${nameEmailFilter},company_id.in.(${companyIds.join(",")})`);
+    } else {
+      query = query.or(nameEmailFilter);
+    }
   }
 
   const { data, error } = await query;
